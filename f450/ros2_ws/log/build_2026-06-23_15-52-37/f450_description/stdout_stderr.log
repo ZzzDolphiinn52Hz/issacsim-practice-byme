@@ -1,0 +1,45 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /lsiopy/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Found ament_lint_auto: 0.17.5 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /config/Desktop/f450/ros2_ws/build/f450_description
+-- Install configuration: ""
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/urdf
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/urdf/f450.urdf.xacro
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes/bottom_plate.stl
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes/leg.stl
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes/leg_mount.stl
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes/protectors.stl
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/meshes/up_plate.stl
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/launch
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/ament_index/resource_index/package_run_dependencies/f450_description
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/ament_index/resource_index/parent_prefix_path/f450_description
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/environment/ament_prefix_path.sh
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/environment/ament_prefix_path.dsv
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/environment/path.sh
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/environment/path.dsv
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/local_setup.bash
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/local_setup.sh
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/local_setup.zsh
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/local_setup.dsv
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/package.dsv
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/ament_index/resource_index/packages/f450_description
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/cmake/f450_descriptionConfig.cmake
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/cmake/f450_descriptionConfig-version.cmake
+-- Installing: /config/Desktop/f450/ros2_ws/install/f450_description/share/f450_description/package.xml

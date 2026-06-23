@@ -1,0 +1,122 @@
+
+<?xml version="1.0"?>
+<robot name="f450" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Scale mesh: STL thường dùng mm, ROS/Isaac dùng mét -->
+  <xacro:property name="mesh_scale" value="0.001 0.001 0.001"/>
+
+  <!-- Thông số ban đầu, sau này chỉnh theo drone thật -->
+  <xacro:property name="mass" value="1.5"/>
+  <xacro:property name="arm_xy" value="0.159"/>
+
+  <link name="base_link">
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://f450_description/meshes/bottom_plate.stl"
+              scale="${mesh_scale}"/>
+      </geometry>
+    </visual>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://f450_description/meshes/up_plate.stl"
+              scale="${mesh_scale}"/>
+      </geometry>
+    </visual>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://f450_description/meshes/leg.stl"
+              scale="${mesh_scale}"/>
+      </geometry>
+    </visual>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://f450_description/meshes/leg_mount.stl"
+              scale="${mesh_scale}"/>
+      </geometry>
+    </visual>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://f450_description/meshes/protectors.stl"
+              scale="${mesh_scale}"/>
+      </geometry>
+    </visual>
+
+    <!-- Collision đơn giản, không dùng mesh phức tạp -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.25 0.25 0.06"/>
+      </geometry>
+    </collision>
+
+    <!-- Inertia gần đúng -->
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="0.03" ixy="0.0" ixz="0.0"
+        iyy="0.03" iyz="0.0"
+        izz="0.06"/>
+    </inertial>
+
+  </link>
+
+  <!-- 4 frame motor để sau này apply force -->
+  <link name="motor_1_link"/>
+  <link name="motor_2_link"/>
+  <link name="motor_3_link"/>
+  <link name="motor_4_link"/>
+
+  <joint name="motor_1_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_1_link"/>
+    <origin xyz="${arm_xy} ${arm_xy} 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="motor_2_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_2_link"/>
+    <origin xyz="${arm_xy} -${arm_xy} 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="motor_3_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_3_link"/>
+    <origin xyz="-${arm_xy} -${arm_xy} 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="motor_4_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="motor_4_link"/>
+    <origin xyz="-${arm_xy} ${arm_xy} 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU frame -->
+  <link name="imu_link"/>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Camera frame, sau này có thể chỉnh vị trí -->
+  <link name="camera_link"/>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.08 0 -0.03" rpy="0 0 0"/>
+  </joint>
+
+</robot>
