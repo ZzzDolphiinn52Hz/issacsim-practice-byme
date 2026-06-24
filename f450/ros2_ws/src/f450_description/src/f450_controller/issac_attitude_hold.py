@@ -1,10 +1,10 @@
+import math
 import omni
 import omni.timeline
 import omni.physx
 import carb
 
 from omni.isaac.dynamic_control import _dynamic_control
-
 from f450_controller.motor_model import MotorModel
 
 
@@ -16,29 +16,78 @@ def clamp(x, lo, hi):
     return max(lo, min(x, hi))
 
 
-class F450AltitudePID:
+def wrap_angle(angle):
+    while angle > math.pi:
+        angle -= 2.0 * math.pi
+    while angle < -math.pi:
+        angle += 2.0 * math.pi
+    return angle
+
+
+def quat_to_euler(q):
+    # dynamic_control quaternion thường là x, y, z, w
+    x = q.x
+    y = q.y
+    z = q.z
+    w = q.w
+
+    # roll
+    sinr_cosp = 2.0 * (w * x + y * z)
+    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+    roll = math.atan2(sinr_cosp, cosr_cosp)
+
+    # pitch
+    sinp = 2.0 * (w * y - z * x)
+    if abs(sinp) >= 1.0:
+        pitch = math.copysign(math.pi / 2.0, sinp)
+    else:
+        pitch = math.asin(sinp)
+
+    # yaw
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    yaw = math.atan2(siny_cosp, cosy_cosp)
+
+    return roll, pitch, yaw
+
+
+class F450AttitudeHold:
     def __init__(
         self,
         base_link_path="/f450_simple/base_link",
         z_target=3.0,
-        pwm_hover=1550.0,
+        pwm_hover=1568.0,
         arm_xy=0.159,
         motor_z=0.04,
     ):
         self.base_link_path = base_link_path
 
+        # Altitude target
         self.z_target = float(z_target)
         self.vz_target = 0.0
-
         self.pwm_hover = float(pwm_hover)
 
-        # PID gains, unit: microsecond PWM
-        self.kp_z = 150.0    # us / m
-        self.kd_z = 90.0     # us / (m/s)
-        self.ki_z = 0.0      # us / (m*s)
+        # Altitude PID, dùng lại gain bạn đã tune ổn
+        self.kp_z = 180.0
+        self.kd_z = 110.0
+        self.ki_z = 25.0
 
         self.integral_z = 0.0
         self.integral_limit = 5.0
+
+        # Attitude target
+        self.roll_target = 0.0
+        self.pitch_target = 0.0
+
+        # Attitude PD gain, đơn vị gần đúng: microsecond/rad
+        self.kp_roll = 120.0
+        self.kd_roll = 35.0
+
+        self.kp_pitch = 120.0
+        self.kd_pitch = 35.0
+
+        # Giới hạn correction attitude để tránh motor lệch quá mạnh
+        self.attitude_pwm_limit = 180.0
 
         self.arm_xy = arm_xy
         self.motor_z = motor_z
@@ -83,13 +132,12 @@ class F450AltitudePID:
 
         self.timeline.play()
 
-        print("F450 altitude PID started")
+        print("F450 attitude hold started")
         print("base_link_path =", self.base_link_path)
         print("z_target =", self.z_target)
         print("pwm_hover =", self.pwm_hover)
-        print("kp_z =", self.kp_z)
-        print("kd_z =", self.kd_z)
-        print("ki_z =", self.ki_z)
+        print("Altitude PID:", self.kp_z, self.kd_z, self.ki_z)
+        print("Roll/Pitch PD:", self.kp_roll, self.kd_roll, self.kp_pitch, self.kd_pitch)
 
     def stop(self):
         if self.physics_subscription is not None:
@@ -105,7 +153,7 @@ class F450AltitudePID:
         self.integral_z = 0.0
         print("Updated z_target:", self.z_target)
 
-    def set_pid(self, kp_z=None, kd_z=None, ki_z=None):
+    def set_altitude_pid(self, kp_z=None, kd_z=None, ki_z=None):
         if kp_z is not None:
             self.kp_z = float(kp_z)
         if kd_z is not None:
@@ -116,21 +164,40 @@ class F450AltitudePID:
         self.integral_z = 0.0
 
         print(
-            "Updated PID:",
+            "Updated altitude PID:",
             "kp_z =", self.kp_z,
             "kd_z =", self.kd_z,
             "ki_z =", self.ki_z,
         )
 
+    def set_attitude_pd(self, kp_roll=None, kd_roll=None, kp_pitch=None, kd_pitch=None):
+        if kp_roll is not None:
+            self.kp_roll = float(kp_roll)
+        if kd_roll is not None:
+            self.kd_roll = float(kd_roll)
+        if kp_pitch is not None:
+            self.kp_pitch = float(kp_pitch)
+        if kd_pitch is not None:
+            self.kd_pitch = float(kd_pitch)
+
+        print(
+            "Updated attitude PD:",
+            "kp_roll =", self.kp_roll,
+            "kd_roll =", self.kd_roll,
+            "kp_pitch =", self.kp_pitch,
+            "kd_pitch =", self.kd_pitch,
+        )
+
     def set_pwm_hover(self, pwm_hover):
         self.pwm_hover = clamp(float(pwm_hover), PWM_MIN, PWM_MAX)
+        self.integral_z = 0.0
         print("Updated pwm_hover:", self.pwm_hover)
 
     def reset_integral(self):
         self.integral_z = 0.0
         print("Reset altitude integral")
 
-    def compute_altitude_pwm(self, z, vz, dt):
+    def compute_altitude_pwm_base(self, z, vz, dt):
         error_z = self.z_target - z
         error_vz = self.vz_target - vz
 
@@ -147,10 +214,58 @@ class F450AltitudePID:
             + self.ki_z * self.integral_z
         )
 
-        pwm = self.pwm_hover + delta_pwm
-        pwm = clamp(pwm, PWM_MIN, PWM_MAX)
+        pwm_base = self.pwm_hover + delta_pwm
+        pwm_base = clamp(pwm_base, PWM_MIN, PWM_MAX)
 
-        return pwm, error_z, error_vz, delta_pwm
+        return pwm_base, error_z, error_vz, delta_pwm
+
+    def compute_attitude_correction(self, roll, pitch, ang_vel):
+        error_roll = wrap_angle(self.roll_target - roll)
+        error_pitch = wrap_angle(self.pitch_target - pitch)
+
+        # angular velocity quanh body axes
+        p = ang_vel.x
+        q = ang_vel.y
+
+        roll_corr = self.kp_roll * error_roll - self.kd_roll * p
+        pitch_corr = self.kp_pitch * error_pitch - self.kd_pitch * q
+
+        roll_corr = clamp(
+            roll_corr,
+            -self.attitude_pwm_limit,
+            self.attitude_pwm_limit,
+        )
+
+        pitch_corr = clamp(
+            pitch_corr,
+            -self.attitude_pwm_limit,
+            self.attitude_pwm_limit,
+        )
+
+        return roll_corr, pitch_corr, error_roll, error_pitch
+
+    def mix_pwm(self, pwm_base, roll_corr, pitch_corr):
+        # Motor order:
+        # 1 front-left
+        # 2 front-right
+        # 3 rear-right
+        # 4 rear-left
+        #
+        # Với thrust body-z:
+        # roll torque  ~ y * F
+        # pitch torque ~ -x * F
+
+        pwm1 = pwm_base + roll_corr - pitch_corr
+        pwm2 = pwm_base - roll_corr - pitch_corr
+        pwm3 = pwm_base - roll_corr + pitch_corr
+        pwm4 = pwm_base + roll_corr + pitch_corr
+
+        return [
+            clamp(pwm1, PWM_MIN, PWM_MAX),
+            clamp(pwm2, PWM_MIN, PWM_MAX),
+            clamp(pwm3, PWM_MIN, PWM_MAX),
+            clamp(pwm4, PWM_MIN, PWM_MAX),
+        ]
 
     def on_physics_step(self, dt):
         self.sim_time += dt
@@ -163,22 +278,30 @@ class F450AltitudePID:
 
         pose = self.dc.get_rigid_body_pose(body_handle)
         lin_vel = self.dc.get_rigid_body_linear_velocity(body_handle)
+        ang_vel = self.dc.get_rigid_body_angular_velocity(body_handle)
 
         z = pose.p.z
         vz = lin_vel.z
 
-        pwm_common, error_z, error_vz, delta_pwm = self.compute_altitude_pwm(
+        roll, pitch, yaw = quat_to_euler(pose.r)
+
+        pwm_base, error_z, error_vz, delta_pwm_z = self.compute_altitude_pwm_base(
             z,
             vz,
             dt,
         )
 
-        self.pwm_commands = [
-            pwm_common,
-            pwm_common,
-            pwm_common,
-            pwm_common,
-        ]
+        roll_corr, pitch_corr, error_roll, error_pitch = self.compute_attitude_correction(
+            roll,
+            pitch,
+            ang_vel,
+        )
+
+        self.pwm_commands = self.mix_pwm(
+            pwm_base,
+            roll_corr,
+            pitch_corr,
+        )
 
         thrusts = []
         currents = []
@@ -209,9 +332,11 @@ class F450AltitudePID:
                 f"vz={vz:.3f} | "
                 f"target={self.z_target:.3f} | "
                 f"err_z={error_z:.3f} | "
-                f"PWM={pwm_common:.1f} | "
-                f"dPWM={delta_pwm:.1f} | "
+                f"roll={math.degrees(roll):.2f}deg | "
+                f"pitch={math.degrees(pitch):.2f}deg | "
+                f"rCorr={roll_corr:.1f} | "
+                f"pCorr={pitch_corr:.1f} | "
+                f"PWM={[round(p, 1) for p in self.pwm_commands]} | "
                 f"F_total={sum(thrusts):.3f} | "
-                f"I={[round(i, 2) for i in currents]} | "
                 f"RPM={[round(r, 0) for r in rpms]}"
             )
