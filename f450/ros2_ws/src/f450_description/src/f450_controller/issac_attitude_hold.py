@@ -121,6 +121,32 @@ class F450AttitudeHold:
         self.sim_time = 0.0
         self.last_print_time = 0.0
 
+        # disturbance force
+        self.enable_test_disturbance = True
+        self.disturbance_start = 2.0
+        self.disturbance_duration = 0.25
+
+        # Lực nhiễu ngang, Newton
+        self.disturbance_force_y = 3.0
+
+        # Điểm đặt lực cao hơn tâm drone để tạo moment
+        self.disturbance_z_offset = 0.12
+        
+
+    def apply_test_disturbance(self, body_handle):
+        if not self.enable_test_disturbance:
+            return
+
+        if self.disturbance_start <= self.sim_time <= self.disturbance_start + self.disturbance_duration:
+            # Apply lực ngang theo trục Y body frame tại điểm cao hơn tâm drone
+            # Việc này tạo moment làm drone bị nghiêng roll.
+            self.dc.apply_body_force(
+                body_handle,
+                carb.Float3(0.0, self.disturbance_force_y, 0.0),
+                carb.Float3(0.0, 0.0, self.disturbance_z_offset),
+                False,
+            )    
+
     def start(self):
         self.stop()
 
@@ -275,6 +301,8 @@ class F450AttitudeHold:
         if body_handle == _dynamic_control.INVALID_HANDLE:
             carb.log_error(f"Cannot find rigid body: {self.base_link_path}")
             return
+        
+        self.apply_test_disturbance(body_handle)
 
         pose = self.dc.get_rigid_body_pose(body_handle)
         lin_vel = self.dc.get_rigid_body_linear_velocity(body_handle)
