@@ -131,7 +131,13 @@ class F450AttitudeHold:
 
         # Điểm đặt lực cao hơn tâm drone để tạo moment
         self.disturbance_z_offset = 0.12
-        
+
+        self.motor_thrust_scale = [
+            1.00,
+            0.97,
+            1.03,
+            0.99,
+        ]
 
     def apply_test_disturbance(self, body_handle):
         if not self.enable_test_disturbance:
@@ -340,6 +346,9 @@ class F450AttitudeHold:
                 self.pwm_commands[i],
                 dt,
             )
+
+            # Giả lập motor/propeller không giống nhau tuyệt đối
+            thrust = thrust * self.motor_thrust_scale[i]
 
             thrusts.append(thrust)
             currents.append(current)
