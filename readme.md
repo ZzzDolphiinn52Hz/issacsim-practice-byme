@@ -33,21 +33,47 @@ if CONTROLLER_PATH not in sys.path:
 
 importlib.invalidate_caches()
 
-import f450_controller.motor_model as motor_model
-import f450_controller.issac_attitude_hold as issac_attitude_hold
-
-importlib.reload(motor_model)
-importlib.reload(issac_attitude_hold)
-
 try:
     f450_app.stop()
 except Exception:
     pass
 
+# Reload all controller modules because Isaac Script Editor keeps module cache
+# between runs.
+MODULE_NAMES = [
+    "f450_controller.control_utils",
+    "f450_controller.motor_model",
+    "f450_controller.altitude_hold",
+    "f450_controller.attitude_pid",
+    "f450_controller.position_hold",
+    "f450_controller.motor_mixer",
+    "f450_controller.disturbance",
+    "f450_controller.propeller_spinner",
+    "f450_controller.attitude_hold_compat",
+    "f450_controller.issac_attitude_hold",
+]
+
+modules = {}
+
+for module_name in MODULE_NAMES:
+    modules[module_name] = importlib.import_module(module_name)
+
+for module_name in MODULE_NAMES:
+    modules[module_name] = importlib.reload(modules[module_name])
+
+issac_attitude_hold = modules["f450_controller.issac_attitude_hold"]
+
 f450_app = issac_attitude_hold.F450AttitudeHold(
     base_link_path="/f450_simple/base_link",
+    # If x_target/y_target are omitted, the controller holds current XY position.
+    # x_target=0.0,
+    # y_target=0.0,
     z_target=1.0,
     pwm_hover=1568.0,
 )
+
+# Optional tuning for XY position hold.
+f450_app.position_angle_limit_deg = 8.0
+f450_app.position_accel_limit = 1.5
 
 f450_app.start()
