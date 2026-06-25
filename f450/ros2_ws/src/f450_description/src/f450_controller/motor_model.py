@@ -9,7 +9,8 @@ class MotorModel:
         PWM in microseconds
 
     Output:
-        thrust in Newton
+        update() returns thrust, current, rpm.
+        reaction_torque is stored as a state property in N*m.
     """
 
     def __init__(
@@ -53,6 +54,7 @@ class MotorModel:
         self.thrust = 0.0
         self.torque_motor = 0.0
         self.torque_load = 0.0
+        self.reaction_torque = 0.0
 
     @staticmethod
     def clamp(x, lo, hi):
@@ -84,7 +86,7 @@ class MotorModel:
         # Motor torque
         torque_motor = self.kt * max(current - self.i0, 0.0)
 
-        # Propeller aerodynamic load torque
+        # Propeller aerodynamic load torque from current rotor speed.
         torque_load = self.kq * self.omega * self.omega
 
         # Rotor dynamics
@@ -92,13 +94,15 @@ class MotorModel:
         self.omega += omega_dot * dt
         self.omega = self.clamp(self.omega, 0.0, self.omega_max)
 
-        # Thrust
+        # Thrust and reaction torque after the rotor state update.
         thrust = self.kf * self.omega * self.omega
+        reaction_torque = self.kq * self.omega * self.omega
 
         self.current = current
         self.thrust = thrust
         self.torque_motor = torque_motor
-        self.torque_load = torque_load
+        self.torque_load = reaction_torque
+        self.reaction_torque = reaction_torque
 
         rpm = self.omega * 60.0 / (2.0 * math.pi)
 
