@@ -25,12 +25,16 @@ ctrl.position_accel_limit = 1.5
 # script editor
 import sys
 import importlib
+import os
 
 CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
+DATA_DIR = CONTROLLER_PATH + "/data"
+TRACKING_CSV = DATA_DIR + "/f450_tracking.csv"
 
 if CONTROLLER_PATH not in sys.path:
     sys.path.insert(0, CONTROLLER_PATH)
 
+os.makedirs(DATA_DIR, exist_ok=True)
 importlib.invalidate_caches()
 
 try:
@@ -77,13 +81,16 @@ f450_app = issac_attitude_hold.F450AttitudeHold(
 f450_app.position_angle_limit_deg = 8.0
 f450_app.position_accel_limit = 1.5
 
-# Optional: log tracking data for plotting.
-f450_app.start_tracking_log("/tmp/f450_tracking.csv", sample_period=0.02)
+# Optional: log tracking data for live/static plotting.
+f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
 
 f450_app.start()
 
 # After the run, stop logging before plotting:
 # f450_app.stop_tracking_log()
 #
-# Plot outside Isaac:
-# python3 src/data/plot_tracking.py /tmp/f450_tracking.csv
+# Live plot outside Isaac:
+# python3 f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv --wait --window 20
+#
+# Static plot outside Isaac:
+# python3 f450/ros2_ws/src/f450_description/src/data/plot_tracking.py f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv

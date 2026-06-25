@@ -1,23 +1,34 @@
 # F450 Tracking Plots
 
-This folder contains scripts for plotting F450 tracking response.
+This folder contains scripts and output data for F450 tracking response.
 
-The expected CSV is created from Isaac Script Editor with:
+Use this path in Isaac Script Editor:
 
 ```python
-f450_app.start_tracking_log("/tmp/f450_tracking.csv", sample_period=0.02)
+DATA_DIR = CONTROLLER_PATH + "/data"
+TRACKING_CSV = DATA_DIR + "/f450_tracking.csv"
+f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
 ```
 
-After running the simulation, stop the log:
+For realtime plotting, run this in another terminal while Isaac Sim is running:
+
+```bash
+python3 f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py \
+  f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --wait --window 20
+```
+
+After running the simulation, stop the log in Isaac:
 
 ```python
 f450_app.stop_tracking_log()
 ```
 
-Then plot:
+Then create the final static plot:
 
 ```bash
-python3 src/data/plot_tracking.py /tmp/f450_tracking.csv
+python3 f450/ros2_ws/src/f450_description/src/data/plot_tracking.py \
+  f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
 ```
 
 The plot contains target vs actual signals for:
