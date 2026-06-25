@@ -15,7 +15,8 @@ For realtime plotting, run this in another terminal while Isaac Sim is running:
 ```bash
 python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py \
   ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
-  --wait --window 20
+  --wait \
+  --max-points 2000
 ```
 
 After running the simulation, stop the log in Isaac:
