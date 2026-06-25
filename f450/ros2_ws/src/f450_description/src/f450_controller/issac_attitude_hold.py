@@ -13,6 +13,7 @@ from f450_controller.attitude_pid import AttitudeHoldPID
 from f450_controller.control_utils import quat_to_euler
 from f450_controller.motor_mixer import QuadXPwmMixer, build_motor_positions
 from f450_controller.motor_model import MotorModel
+from f450_controller.position_hold import PositionHoldPID
 from f450_controller.propeller_spinner import PhysicalPropellerSpinner
 from f450_controller.disturbance import TestDisturbance
 
@@ -21,6 +22,8 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def __init__(
         self,
         base_link_path="/f450_simple/base_link",
+        x_target=None,
+        y_target=None,
         z_target=3.0,
         pwm_hover=1568.0,
         arm_xy=0.159,
@@ -33,6 +36,12 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             pwm_hover=pwm_hover,
         )
         self.attitude_controller = AttitudeHoldPID()
+        self.position_controller = PositionHoldPID(
+            x_target=0.0 if x_target is None else x_target,
+            y_target=0.0 if y_target is None else y_target,
+        )
+        self._auto_set_x_target = x_target is None
+        self._auto_set_y_target = y_target is None
         self.mixer = QuadXPwmMixer()
         self.disturbance = TestDisturbance()
         self.propeller_spinner = PhysicalPropellerSpinner()
@@ -75,8 +84,17 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
 
         print("F450 attitude hold started")
         print("base_link_path =", self.base_link_path)
+        print("x_target =", "current" if self._auto_set_x_target else self.x_target)
+        print("y_target =", "current" if self._auto_set_y_target else self.y_target)
         print("z_target =", self.z_target)
         print("pwm_hover =", self.pwm_hover)
+        print(
+            "Position PID:",
+            "x =",
+            (self.kp_x, self.kd_x, self.ki_x),
+            "y =",
+            (self.kp_y, self.kd_y, self.ki_y),
+        )
         print("Altitude PID:", self.kp_z, self.kd_z, self.ki_z)
         print("Roll/Pitch PD:", self.kp_roll, self.kd_roll, self.kp_pitch, self.kd_pitch)
 
@@ -92,6 +110,66 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def set_target(self, z_target):
         self.altitude_controller.set_target(z_target)
         print("Updated z_target:", self.z_target)
+
+    def set_position_target(self, x_target=None, y_target=None):
+        if x_target is not None:
+            self._auto_set_x_target = False
+        if y_target is not None:
+            self._auto_set_y_target = False
+
+        self.position_controller.set_target(
+            x_target=x_target,
+            y_target=y_target,
+        )
+        print("Updated position target:", "x =", self.x_target, "y =", self.y_target)
+
+    def set_xyz_target(self, x_target=None, y_target=None, z_target=None):
+        if x_target is not None or y_target is not None:
+            if x_target is not None:
+                self._auto_set_x_target = False
+            if y_target is not None:
+                self._auto_set_y_target = False
+
+            self.position_controller.set_target(
+                x_target=x_target,
+                y_target=y_target,
+            )
+        if z_target is not None:
+            self.altitude_controller.set_target(z_target)
+
+        print(
+            "Updated XYZ target:",
+            "x =", self.x_target,
+            "y =", self.y_target,
+            "z =", self.z_target,
+        )
+
+    def set_position_pid(
+        self,
+        kp_x=None,
+        kd_x=None,
+        ki_x=None,
+        kp_y=None,
+        kd_y=None,
+        ki_y=None,
+    ):
+        self.position_controller.set_pid(
+            kp_x=kp_x,
+            kd_x=kd_x,
+            ki_x=ki_x,
+            kp_y=kp_y,
+            kd_y=kd_y,
+            ki_y=ki_y,
+        )
+        print(
+            "Updated position PID:",
+            "kp_x =", self.kp_x,
+            "kd_x =", self.kd_x,
+            "ki_x =", self.ki_x,
+            "kp_y =", self.kp_y,
+            "kd_y =", self.kd_y,
+            "ki_y =", self.ki_y,
+        )
 
     def set_altitude_pid(self, kp_z=None, kd_z=None, ki_z=None):
         self.altitude_controller.set_pid(kp_z=kp_z, kd_z=kd_z, ki_z=ki_z)
@@ -141,6 +219,20 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         self.attitude_controller.reset_integral()
         print("Reset attitude integral")
 
+    def reset_position_integral(self):
+        self.position_controller.reset_integral()
+        print("Reset position integral")
+
+    def compute_position_attitude_target(self, x, y, vx, vy, yaw, dt):
+        return self.position_controller.compute_attitude_target(
+            x,
+            y,
+            vx,
+            vy,
+            yaw,
+            dt,
+        )
+
     def compute_altitude_pwm_base(self, z, vz, dt):
         return self.altitude_controller.compute_pwm_base(z, vz, dt)
 
@@ -164,6 +256,28 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             self.sim_time,
         )
 
+    def _format_xy_error(self, position_debug):
+        if position_debug is None:
+            return "off"
+
+        return (
+            f"({position_debug['error_x']:.3f},"
+            f"{position_debug['error_y']:.3f})"
+        )
+
+    def _set_initial_xy_target_if_needed(self, x, y):
+        if not (self._auto_set_x_target or self._auto_set_y_target):
+            return
+
+        self.position_controller.set_target(
+            x_target=x if self._auto_set_x_target else None,
+            y_target=y if self._auto_set_y_target else None,
+        )
+        self._auto_set_x_target = False
+        self._auto_set_y_target = False
+
+        print("Auto XY target:", "x =", self.x_target, "y =", self.y_target)
+
     def on_physics_step(self, dt):
         self.sim_time += dt
 
@@ -180,8 +294,28 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         ang_vel = self.dc.get_rigid_body_angular_velocity(body_handle)
 
         z = pose.p.z
+        x = pose.p.x
+        y = pose.p.y
         vz = lin_vel.z
+        vx = lin_vel.x
+        vy = lin_vel.y
         roll, pitch, yaw = quat_to_euler(pose.r)
+
+        position_debug = None
+
+        self._set_initial_xy_target_if_needed(x, y)
+
+        if self.enable_position_hold:
+            position_debug = self.compute_position_attitude_target(
+                x,
+                y,
+                vx,
+                vy,
+                yaw,
+                dt,
+            )
+            self.roll_target = position_debug["roll_target"]
+            self.pitch_target = position_debug["pitch_target"]
 
         pwm_base, error_z, error_vz, delta_pwm_z = self.compute_altitude_pwm_base(
             z,
@@ -229,10 +363,16 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             self.last_print_time = self.sim_time
 
             print(
+                f"x={x:.3f} | "
+                f"y={y:.3f} | "
                 f"z={z:.3f} | "
+                f"target_xy=({self.x_target:.2f},{self.y_target:.2f}) | "
                 f"vz={vz:.3f} | "
                 f"target={self.z_target:.3f} | "
                 f"err_z={error_z:.3f} | "
+                f"err_xy={self._format_xy_error(position_debug)} | "
+                f"rtgt={math.degrees(self.roll_target):.2f}deg | "
+                f"ptgt={math.degrees(self.pitch_target):.2f}deg | "
                 f"roll={math.degrees(roll):.2f}deg | "
                 f"pitch={math.degrees(pitch):.2f}deg | "
                 f"Iroll={self.integral_roll:.3f} | "

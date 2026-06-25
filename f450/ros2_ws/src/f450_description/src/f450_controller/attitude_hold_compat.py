@@ -1,7 +1,141 @@
+import math
+
 from f450_controller.control_utils import PWM_MAX, PWM_MIN, clamp
 
 
 class AttitudeHoldCompatibilityMixin:
+    @property
+    def enable_position_hold(self):
+        return self.position_controller.enabled
+
+    @enable_position_hold.setter
+    def enable_position_hold(self, value):
+        self.position_controller.enabled = bool(value)
+
+    @property
+    def x_target(self):
+        return self.position_controller.x_target
+
+    @x_target.setter
+    def x_target(self, value):
+        if hasattr(self, "_auto_set_x_target"):
+            self._auto_set_x_target = False
+        self.position_controller.x_target = float(value)
+
+    @property
+    def y_target(self):
+        return self.position_controller.y_target
+
+    @y_target.setter
+    def y_target(self, value):
+        if hasattr(self, "_auto_set_y_target"):
+            self._auto_set_y_target = False
+        self.position_controller.y_target = float(value)
+
+    @property
+    def vx_target(self):
+        return self.position_controller.vx_target
+
+    @vx_target.setter
+    def vx_target(self, value):
+        self.position_controller.vx_target = float(value)
+
+    @property
+    def vy_target(self):
+        return self.position_controller.vy_target
+
+    @vy_target.setter
+    def vy_target(self, value):
+        self.position_controller.vy_target = float(value)
+
+    @property
+    def kp_x(self):
+        return self.position_controller.kp_x
+
+    @kp_x.setter
+    def kp_x(self, value):
+        self.position_controller.kp_x = float(value)
+
+    @property
+    def kd_x(self):
+        return self.position_controller.kd_x
+
+    @kd_x.setter
+    def kd_x(self, value):
+        self.position_controller.kd_x = float(value)
+
+    @property
+    def ki_x(self):
+        return self.position_controller.ki_x
+
+    @ki_x.setter
+    def ki_x(self, value):
+        self.position_controller.ki_x = float(value)
+
+    @property
+    def kp_y(self):
+        return self.position_controller.kp_y
+
+    @kp_y.setter
+    def kp_y(self, value):
+        self.position_controller.kp_y = float(value)
+
+    @property
+    def kd_y(self):
+        return self.position_controller.kd_y
+
+    @kd_y.setter
+    def kd_y(self, value):
+        self.position_controller.kd_y = float(value)
+
+    @property
+    def ki_y(self):
+        return self.position_controller.ki_y
+
+    @ki_y.setter
+    def ki_y(self, value):
+        self.position_controller.ki_y = float(value)
+
+    @property
+    def integral_x(self):
+        return self.position_controller.integral_x
+
+    @integral_x.setter
+    def integral_x(self, value):
+        self.position_controller.integral_x = float(value)
+
+    @property
+    def integral_y(self):
+        return self.position_controller.integral_y
+
+    @integral_y.setter
+    def integral_y(self, value):
+        self.position_controller.integral_y = float(value)
+
+    @property
+    def position_integral_limit(self):
+        return self.position_controller.integral_limit
+
+    @position_integral_limit.setter
+    def position_integral_limit(self, value):
+        self.position_controller.integral_limit = float(value)
+
+    @property
+    def position_accel_limit(self):
+        return self.position_controller.accel_limit
+
+    @position_accel_limit.setter
+    def position_accel_limit(self, value):
+        self.position_controller.accel_limit = float(value)
+
+    @property
+    def position_angle_limit_deg(self):
+        return math.degrees(self.position_controller.angle_limit)
+
+    @position_angle_limit_deg.setter
+    def position_angle_limit_deg(self, value):
+        self.position_controller.angle_limit = math.radians(float(value))
+
     @property
     def z_target(self):
         return self.altitude_controller.z_target
