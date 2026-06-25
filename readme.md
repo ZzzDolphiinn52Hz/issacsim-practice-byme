@@ -18,9 +18,10 @@ ctrl.start()
 ctrl.set_position_target(2.0, -1.0)
 ctrl.set_xyz_target(0.0, 0.0, 4.0)
 Tune PID XY:
-ctrl.set_position_pid(kp_x=0.7, kd_x=1.0, kp_y=0.7, kd_y=1.0)
-ctrl.position_angle_limit_deg = 8.0
-ctrl.position_accel_limit = 1.5
+ctrl.set_position_pid(kp_x=0.55, kd_x=1.30, ki_x=0.03, kp_y=0.55, kd_y=1.30, ki_y=0.03)
+ctrl.position_angle_limit_deg = 6.5
+ctrl.position_accel_limit = 1.2
+ctrl.set_yaw_pid(kp_yaw=0.08, ki_yaw=0.004, kd_yaw=0.030)
 
 # script editor
 import sys
@@ -50,6 +51,7 @@ MODULE_NAMES = [
     "f450_controller.altitude_hold",
     "f450_controller.attitude_pid",
     "f450_controller.position_hold",
+    "f450_controller.yaw_hold",
     "f450_controller.motor_mixer",
     "f450_controller.disturbance",
     "f450_controller.propeller_spinner",
@@ -74,12 +76,15 @@ f450_app = issac_attitude_hold.F450AttitudeHold(
     # x_target=0.0,
     # y_target=0.0,
     z_target=1.0,
-    pwm_hover=1568.0,
+    pwm_hover=1307.0,
 )
 
 # Optional tuning for XY position hold.
-f450_app.position_angle_limit_deg = 8.0
-f450_app.position_accel_limit = 1.5
+f450_app.position_angle_limit_deg = 6.5
+f450_app.position_accel_limit = 1.2
+
+# Optional yaw hold target, radian.
+f450_app.set_yaw_target(0.0)
 
 # Optional: log tracking data for live/static plotting.
 f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)

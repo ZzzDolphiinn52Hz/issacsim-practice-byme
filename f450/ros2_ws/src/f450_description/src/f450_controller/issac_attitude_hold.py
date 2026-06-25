@@ -17,6 +17,7 @@ from f450_controller.position_hold import PositionHoldPID
 from f450_controller.propeller_spinner import PhysicalPropellerSpinner
 from f450_controller.disturbance import TestDisturbance
 from f450_controller.tracking_logger import TrackingLogger
+from f450_controller.yaw_hold import YawHoldPID
 
 
 class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
@@ -26,7 +27,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         x_target=None,
         y_target=None,
         z_target=3.0,
-        pwm_hover=1568.0,
+        pwm_hover=1307.0,
         arm_xy=0.159,
         motor_z=0.04,
     ):
@@ -37,6 +38,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             pwm_hover=pwm_hover,
         )
         self.attitude_controller = AttitudeHoldPID()
+        self.yaw_controller = YawHoldPID()
         self.position_controller = PositionHoldPID(
             x_target=0.0 if x_target is None else x_target,
             y_target=0.0 if y_target is None else y_target,
@@ -71,7 +73,6 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         self.physics_subscription = None
         self.sim_time = 0.0
         self.last_print_time = 0.0
-        self.yaw_target = 0.0
         self.tracking_logger = None
 
     def start(self):
@@ -100,6 +101,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         )
         print("Altitude PID:", self.kp_z, self.kd_z, self.ki_z)
         print("Roll/Pitch PD:", self.kp_roll, self.kd_roll, self.kp_pitch, self.kd_pitch)
+        print("Yaw PID:", self.kp_yaw, self.ki_yaw, self.kd_yaw)
 
     def _unsubscribe_physics(self):
         if self.physics_subscription is not None:
@@ -214,6 +216,23 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             "kd_pitch =", self.kd_pitch,
         )
 
+    def set_yaw_pid(self, kp_yaw=None, ki_yaw=None, kd_yaw=None):
+        self.yaw_controller.set_pid(
+            kp_yaw=kp_yaw,
+            ki_yaw=ki_yaw,
+            kd_yaw=kd_yaw,
+        )
+        print(
+            "Updated yaw PID:",
+            "kp_yaw =", self.kp_yaw,
+            "ki_yaw =", self.ki_yaw,
+            "kd_yaw =", self.kd_yaw,
+        )
+
+    def set_yaw_target(self, yaw_target):
+        self.yaw_controller.set_target(yaw_target)
+        print("Updated yaw_target:", self.yaw_target)
+
     def set_pwm_hover(self, pwm_hover):
         self.altitude_controller.set_pwm_hover(pwm_hover)
         print("Updated pwm_hover:", self.pwm_hover)
@@ -225,6 +244,10 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def reset_attitude_integral(self):
         self.attitude_controller.reset_integral()
         print("Reset attitude integral")
+
+    def reset_yaw_integral(self):
+        self.yaw_controller.reset_integral()
+        print("Reset yaw integral")
 
     def reset_position_integral(self):
         self.position_controller.reset_integral()
@@ -260,6 +283,9 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
 
     def compute_attitude_correction(self, roll, pitch, ang_vel, dt):
         return self.attitude_controller.compute_correction(roll, pitch, ang_vel, dt)
+
+    def compute_yaw_torque(self, yaw, yaw_rate, dt):
+        return self.yaw_controller.compute_torque(yaw, yaw_rate, dt)
 
     def mix_pwm(self, pwm_base, roll_corr, pitch_corr):
         return self.mixer.mix(pwm_base, roll_corr, pitch_corr)
@@ -299,6 +325,25 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         self._auto_set_y_target = False
 
         print("Auto XY target:", "x =", self.x_target, "y =", self.y_target)
+
+    def apply_yaw_torque(self, body_handle, torque_z):
+        if abs(torque_z) < 1e-9:
+            return
+
+        force_y = torque_z / (2.0 * max(self.arm_xy, 1e-6))
+
+        self.dc.apply_body_force(
+            body_handle,
+            carb.Float3(0.0, force_y, 0.0),
+            carb.Float3(self.arm_xy, 0.0, 0.0),
+            False,
+        )
+        self.dc.apply_body_force(
+            body_handle,
+            carb.Float3(0.0, -force_y, 0.0),
+            carb.Float3(-self.arm_xy, 0.0, 0.0),
+            False,
+        )
 
     def on_physics_step(self, dt):
         self.sim_time += dt
@@ -344,6 +389,17 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             vz,
             dt,
         )
+
+        yaw_torque = 0.0
+        error_yaw = 0.0
+
+        if self.enable_yaw_hold:
+            yaw_torque, error_yaw = self.compute_yaw_torque(
+                yaw,
+                ang_vel.z,
+                dt,
+            )
+            self.apply_yaw_torque(body_handle, yaw_torque)
 
         roll_corr, pitch_corr, error_roll, error_pitch = self.compute_attitude_correction(
             roll,
@@ -414,6 +470,8 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
                 f"ptgt={math.degrees(self.pitch_target):.2f}deg | "
                 f"roll={math.degrees(roll):.2f}deg | "
                 f"pitch={math.degrees(pitch):.2f}deg | "
+                f"yaw={math.degrees(yaw):.2f}deg | "
+                f"yCorr={yaw_torque:.4f}Nm | "
                 f"Iroll={self.integral_roll:.3f} | "
                 f"Ipitch={self.integral_pitch:.3f} | "
                 f"rCorr={roll_corr:.1f} | "

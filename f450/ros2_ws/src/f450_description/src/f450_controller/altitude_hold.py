@@ -6,11 +6,11 @@ class AltitudeHoldPID:
         self,
         z_target=3.0,
         vz_target=0.0,
-        pwm_hover=1568.0,
-        kp_z=180.0,
-        kd_z=110.0,
-        ki_z=25.0,
-        integral_limit=5.0,
+        pwm_hover=1307.0,
+        kp_z=220.0,
+        kd_z=150.0,
+        ki_z=15.0,
+        integral_limit=12.0,
     ):
         self.z_target = float(z_target)
         self.vz_target = float(vz_target)

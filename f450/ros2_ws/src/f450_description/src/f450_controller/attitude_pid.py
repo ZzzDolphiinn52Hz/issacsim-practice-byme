@@ -6,14 +6,14 @@ class AttitudeHoldPID:
         self,
         roll_target=0.0,
         pitch_target=0.0,
-        kp_roll=120.0,
-        ki_roll=35.0,
-        kd_roll=35.0,
-        kp_pitch=120.0,
-        ki_pitch=35.0,
-        kd_pitch=35.0,
+        kp_roll=520.0,
+        ki_roll=25.0,
+        kd_roll=130.0,
+        kp_pitch=520.0,
+        ki_pitch=25.0,
+        kd_pitch=130.0,
         integral_limit=1.0,
-        pwm_limit=180.0,
+        pwm_limit=260.0,
     ):
         self.roll_target = float(roll_target)
         self.pitch_target = float(pitch_target)

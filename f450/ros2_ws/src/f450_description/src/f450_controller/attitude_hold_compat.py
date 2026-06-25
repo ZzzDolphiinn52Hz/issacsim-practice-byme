@@ -50,11 +50,51 @@ class AttitudeHoldCompatibilityMixin:
 
     @property
     def yaw_target(self):
-        return self._yaw_target
+        return self.yaw_controller.yaw_target
 
     @yaw_target.setter
     def yaw_target(self, value):
-        self._yaw_target = float(value)
+        self.yaw_controller.yaw_target = float(value)
+
+    @property
+    def enable_yaw_hold(self):
+        return self.yaw_controller.enabled
+
+    @enable_yaw_hold.setter
+    def enable_yaw_hold(self, value):
+        self.yaw_controller.enabled = bool(value)
+
+    @property
+    def kp_yaw(self):
+        return self.yaw_controller.kp_yaw
+
+    @kp_yaw.setter
+    def kp_yaw(self, value):
+        self.yaw_controller.kp_yaw = float(value)
+
+    @property
+    def ki_yaw(self):
+        return self.yaw_controller.ki_yaw
+
+    @ki_yaw.setter
+    def ki_yaw(self, value):
+        self.yaw_controller.ki_yaw = float(value)
+
+    @property
+    def kd_yaw(self):
+        return self.yaw_controller.kd_yaw
+
+    @kd_yaw.setter
+    def kd_yaw(self, value):
+        self.yaw_controller.kd_yaw = float(value)
+
+    @property
+    def yaw_torque_limit(self):
+        return self.yaw_controller.torque_limit
+
+    @yaw_torque_limit.setter
+    def yaw_torque_limit(self, value):
+        self.yaw_controller.torque_limit = float(value)
 
     @property
     def kp_x(self):
