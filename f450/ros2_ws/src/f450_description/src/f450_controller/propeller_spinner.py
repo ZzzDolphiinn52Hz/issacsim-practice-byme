@@ -12,7 +12,7 @@ class PhysicalPropellerSpinner:
         articulation_path="/f450_simple",
         joint_names=None,
         motor_directions=None,
-        speed_scale=0.9,
+        speed_scale=0.7,
     ):
         self.enabled = enabled
         self.articulation_path = articulation_path
