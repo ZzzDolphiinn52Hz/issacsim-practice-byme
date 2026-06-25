@@ -284,11 +284,11 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def compute_attitude_correction(self, roll, pitch, ang_vel, dt):
         return self.attitude_controller.compute_correction(roll, pitch, ang_vel, dt)
 
-    def compute_yaw_torque(self, yaw, yaw_rate, dt):
-        return self.yaw_controller.compute_torque(yaw, yaw_rate, dt)
+    def compute_yaw_correction(self, yaw, yaw_rate, dt):
+        return self.yaw_controller.compute_correction(yaw, yaw_rate, dt)
 
-    def mix_pwm(self, pwm_base, roll_corr, pitch_corr):
-        return self.mixer.mix(pwm_base, roll_corr, pitch_corr)
+    def mix_pwm(self, pwm_base, roll_corr, pitch_corr, yaw_corr=0.0):
+        return self.mixer.mix(pwm_base, roll_corr, pitch_corr, yaw_corr)
 
     def apply_test_disturbance(self, body_handle):
         self.disturbance.apply(self.dc, body_handle, self.sim_time)
@@ -326,7 +326,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
 
         print("Auto XY target:", "x =", self.x_target, "y =", self.y_target)
 
-    def apply_yaw_torque(self, body_handle, torque_z):
+    def apply_yaw_reaction_torque(self, body_handle, torque_z):
         if abs(torque_z) < 1e-9:
             return
 
@@ -390,16 +390,15 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             dt,
         )
 
-        yaw_torque = 0.0
+        yaw_corr = 0.0
         error_yaw = 0.0
 
         if self.enable_yaw_hold:
-            yaw_torque, error_yaw = self.compute_yaw_torque(
+            yaw_corr, error_yaw = self.compute_yaw_correction(
                 yaw,
                 ang_vel.z,
                 dt,
             )
-            self.apply_yaw_torque(body_handle, yaw_torque)
 
         roll_corr, pitch_corr, error_roll, error_pitch = self.compute_attitude_correction(
             roll,
@@ -412,11 +411,13 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             pwm_base,
             roll_corr,
             pitch_corr,
+            yaw_corr,
         )
 
         thrusts = []
         currents = []
         rpms = []
+        reaction_torques = []
 
         for i in range(4):
             thrust, current, rpm = self.motors[i].update(
@@ -427,6 +428,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             thrusts.append(thrust)
             currents.append(current)
             rpms.append(rpm)
+            reaction_torques.append(self.motors[i].reaction_torque)
 
             self.dc.apply_body_force(
                 body_handle,
@@ -435,6 +437,11 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
                 False,
             )
 
+        body_yaw_torque = 0.0
+        for direction, reaction_torque in zip(self.motor_directions, reaction_torques):
+            body_yaw_torque += -direction * reaction_torque
+
+        self.apply_yaw_reaction_torque(body_handle, body_yaw_torque)
         self.spin_physical_propellers(rpms)
 
         if self.tracking_logger is not None:
@@ -471,7 +478,8 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
                 f"roll={math.degrees(roll):.2f}deg | "
                 f"pitch={math.degrees(pitch):.2f}deg | "
                 f"yaw={math.degrees(yaw):.2f}deg | "
-                f"yCorr={yaw_torque:.4f}Nm | "
+                f"yCorr={yaw_corr:.1f} | "
+                f"Mz={body_yaw_torque:.4f}Nm | "
                 f"Iroll={self.integral_roll:.3f} | "
                 f"Ipitch={self.integral_pitch:.3f} | "
                 f"rCorr={roll_corr:.1f} | "

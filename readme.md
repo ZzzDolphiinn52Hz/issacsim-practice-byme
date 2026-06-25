@@ -21,7 +21,7 @@ Tune PID XY:
 ctrl.set_position_pid(kp_x=0.55, kd_x=1.30, ki_x=0.03, kp_y=0.55, kd_y=1.30, ki_y=0.03)
 ctrl.position_angle_limit_deg = 6.5
 ctrl.position_accel_limit = 1.2
-ctrl.set_yaw_pid(kp_yaw=0.08, ki_yaw=0.004, kd_yaw=0.030)
+ctrl.set_yaw_pid(kp_yaw=95.0, ki_yaw=8.0, kd_yaw=28.0)
 
 # script editor
 import sys

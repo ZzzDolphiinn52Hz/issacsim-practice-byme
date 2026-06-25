@@ -90,11 +90,19 @@ class AttitudeHoldCompatibilityMixin:
 
     @property
     def yaw_torque_limit(self):
-        return self.yaw_controller.torque_limit
+        return self.yaw_controller.pwm_limit
 
     @yaw_torque_limit.setter
     def yaw_torque_limit(self, value):
-        self.yaw_controller.torque_limit = float(value)
+        self.yaw_controller.pwm_limit = float(value)
+
+    @property
+    def yaw_pwm_limit(self):
+        return self.yaw_controller.pwm_limit
+
+    @yaw_pwm_limit.setter
+    def yaw_pwm_limit(self, value):
+        self.yaw_controller.pwm_limit = float(value)
 
     @property
     def kp_x(self):
