@@ -142,6 +142,39 @@ class F450AttitudeHold:
         # Điểm đặt lực cao hơn tâm drone để tạo moment
         self.disturbance_z_offset = 0.12
 
+        # =========================
+        # Physical propeller joints
+        # =========================
+
+        self.enable_physical_propeller_spin = True
+
+        # Articulation root thường là prim robot chính.
+        # Nếu path này không đúng, ta sẽ thử base_link_path ở hàm init.
+        self.articulation_path = "/f450_simple"
+
+        self.propeller_joint_names = [
+            "propeller_1_joint",
+            "propeller_2_joint",
+            "propeller_3_joint",
+            "propeller_4_joint",
+        ]
+
+        # Chiều quay giả lập của 4 motor
+        self.motor_directions = [
+            1.0,
+            -1.0,
+            1.0,
+            -1.0,
+        ]
+
+        # Để 1.0 là quay theo RPM thật.
+        # Nếu mô phỏng bị nặng/rung, giảm xuống 0.2 hoặc 0.1.
+        self.propeller_speed_scale = 0.9
+
+        self.articulation_handle = None
+        self.propeller_dof_handles = []
+        self.propeller_dofs_initialized = False
+
     def apply_test_disturbance(self, body_handle):
         if not self.enable_test_disturbance:
             return
@@ -404,6 +437,8 @@ class F450AttitudeHold:
                 False,
             )
 
+        self.spin_physical_propellers(rpms)
+
         if self.sim_time - self.last_print_time > 0.5:
             self.last_print_time = self.sim_time
 
@@ -427,3 +462,121 @@ class F450AttitudeHold:
         self.integral_roll = 0.0
         self.integral_pitch = 0.0
         print("Reset attitude integral")
+
+    def init_propeller_dofs(self):
+        if self.propeller_dofs_initialized:
+            return
+
+        if not self.enable_physical_propeller_spin:
+            return
+
+        self.propeller_dof_handles = []
+
+        # Thử lấy articulation theo robot root trước
+        articulation_handle = self.dc.get_articulation(self.articulation_path)
+
+        # Nếu không được, thử theo base_link_path
+        if articulation_handle == _dynamic_control.INVALID_HANDLE:
+            articulation_handle = self.dc.get_articulation(self.base_link_path)
+
+        if articulation_handle == _dynamic_control.INVALID_HANDLE:
+            carb.log_warn(
+                f"Cannot find articulation at {self.articulation_path} "
+                f"or {self.base_link_path}. Propeller joints will not spin."
+            )
+            return
+
+        self.articulation_handle = articulation_handle
+
+        for joint_name in self.propeller_joint_names:
+            dof_handle = self.dc.find_articulation_dof(
+                articulation_handle,
+                joint_name,
+            )
+
+            if dof_handle == _dynamic_control.INVALID_HANDLE:
+                carb.log_warn(f"Cannot find propeller DOF: {joint_name}")
+            else:
+                print("Found propeller DOF:", joint_name)
+
+                # Cấu hình drive cho joint quay theo velocity target
+                try:
+                    props = self.dc.get_dof_properties(dof_handle)
+
+                    try:
+                        props.drive_mode = _dynamic_control.DriveMode.DRIVE_VEL
+                    except Exception:
+                        pass
+
+                    if hasattr(props, "stiffness"):
+                        props.stiffness = 0.0
+
+                    if hasattr(props, "damping"):
+                        props.damping = 1.0
+
+                    if hasattr(props, "max_effort"):
+                        props.max_effort = 100.0
+
+                    if hasattr(props, "max_force"):
+                        props.max_force = 100.0
+
+                    self.dc.set_dof_properties(dof_handle, props)
+
+                    print("Configured velocity drive for", joint_name)
+
+                except Exception as e:
+                    print("Could not configure DOF properties for", joint_name, e)
+
+            self.propeller_dof_handles.append(dof_handle)
+
+        self.propeller_dofs_initialized = True
+
+    def spin_physical_propellers(self, rpms):
+        if not self.enable_physical_propeller_spin:
+            return
+
+        if not self.propeller_dofs_initialized:
+            self.init_propeller_dofs()
+
+        if len(self.propeller_dof_handles) != 4:
+            return
+
+        omega_cmds = []
+
+        for i in range(4):
+            dof_handle = self.propeller_dof_handles[i]
+
+            if dof_handle == _dynamic_control.INVALID_HANDLE:
+                omega_cmds.append(0.0)
+                continue
+
+            rpm = rpms[i]
+
+            # RPM -> rad/s
+            omega = rpm * 2.0 * math.pi / 60.0
+
+            omega_cmd = (
+                self.motor_directions[i]
+                * self.propeller_speed_scale
+                * omega
+            )
+
+            omega_cmds.append(omega_cmd)
+
+            try:
+                self.dc.set_dof_velocity_target(dof_handle, omega_cmd)
+            except Exception as e:
+                try:
+                    self.dc.set_dof_velocity(dof_handle, omega_cmd)
+                except Exception as e2:
+                    pass
+
+        # Debug mỗi 1 giây
+        if self.sim_time - getattr(self, "last_prop_debug_time", 0.0) > 1.0:
+            self.last_prop_debug_time = self.sim_time
+            print(
+                "Propeller omega_cmd:",
+                [round(w, 2) for w in omega_cmds],
+                "RPM:",
+                [round(r, 0) for r in rpms],
+            )

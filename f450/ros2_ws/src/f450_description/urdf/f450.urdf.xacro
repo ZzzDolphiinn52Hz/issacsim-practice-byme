@@ -49,6 +49,57 @@
   </material>
 
   <!-- ========================= -->
+  <!-- Physical propeller macro -->
+  <!-- ========================= -->
+
+  <xacro:macro name="physical_propeller" params="idx x y yaw mat">
+
+    <link name="propeller_${idx}_link">
+
+      <!-- Cánh số 1 -->
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${yaw}"/>
+        <geometry>
+          <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        </geometry>
+        <material name="${mat}"/>
+      </visual>
+
+      <!-- Cánh số 2, vuông góc với cánh số 1 -->
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${yaw + 1.57079632679}"/>
+        <geometry>
+          <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        </geometry>
+        <material name="${mat}"/>
+      </visual>
+
+      <!-- Inertia nhỏ cho propeller -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.012"/>
+        <inertia
+          ixx="0.000001"
+          ixy="0.0"
+          ixz="0.0"
+          iyy="0.000032"
+          iyz="0.0"
+          izz="0.000032"/>
+      </inertial>
+
+    </link>
+
+    <joint name="propeller_${idx}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="propeller_${idx}_link"/>
+      <origin xyz="${x} ${y} 0.065" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <dynamics damping="0.0001" friction="0.0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <!-- ========================= -->
   <!-- Base link: toàn bộ thân drone là 1 rigid body -->
   <!-- ========================= -->
 
@@ -138,38 +189,103 @@
       <material name="gray"/>
     </visual>
 
-    <!-- Propeller đơn giản -->
+
+    <!-- ========================= -->
+    <!-- Landing gear / càng đáp -->
+    <!-- ========================= -->
+
+    <!-- Skid trái -->
     <visual>
-      <origin xyz="${arm_xy} ${arm_xy} 0.04" rpy="0 0 0.785398"/>
+      <origin xyz="0 0.12 -0.17" rpy="0 0 0"/>
       <geometry>
-        <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        <box size="0.38 0.025 0.025"/>
       </geometry>
-      <material name="red"/>
+      <material name="gray"/>
     </visual>
 
-    <visual>
-      <origin xyz="${arm_xy} -${arm_xy} 0.04" rpy="0 0 -0.785398"/>
+    <collision>
+      <origin xyz="0 0.12 -0.17" rpy="0 0 0"/>
       <geometry>
-        <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        <box size="0.38 0.025 0.025"/>
       </geometry>
-      <material name="white"/>
+    </collision>
+
+    <!-- Skid phải -->
+    <visual>
+      <origin xyz="0 -0.12 -0.17" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.38 0.025 0.025"/>
+      </geometry>
+      <material name="gray"/>
     </visual>
 
-    <visual>
-      <origin xyz="-${arm_xy} -${arm_xy} 0.04" rpy="0 0 0.785398"/>
+    <collision>
+      <origin xyz="0 -0.12 -0.17" rpy="0 0 0"/>
       <geometry>
-        <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        <box size="0.38 0.025 0.025"/>
       </geometry>
-      <material name="red"/>
+    </collision>
+
+    <!-- 4 thanh chống càng đáp -->
+    <visual>
+      <origin xyz="0.12 0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+      <material name="gray"/>
     </visual>
 
-    <visual>
-      <origin xyz="-${arm_xy} ${arm_xy} 0.04" rpy="0 0 -0.785398"/>
+    <collision>
+      <origin xyz="0.12 0.12 -0.095" rpy="0 0 0"/>
       <geometry>
-        <box size="${prop_length} ${prop_width} ${prop_height}"/>
+        <box size="0.018 0.018 0.15"/>
       </geometry>
-      <material name="white"/>
+    </collision>
+
+    <visual>
+      <origin xyz="-0.12 0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+      <material name="gray"/>
     </visual>
+
+    <collision>
+      <origin xyz="-0.12 0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0.12 -0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0.12 -0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="-0.12 -0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+
+    <collision>
+      <origin xyz="-0.12 -0.12 -0.095" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.018 0.15"/>
+      </geometry>
+    </collision>
 
     <!-- Inertial của toàn bộ drone -->
     <inertial>
@@ -236,5 +352,37 @@
     <child link="camera_link"/>
     <origin xyz="0.08 0 -0.03" rpy="0 0 0"/>
   </joint>
+
+  <!-- ========================= -->
+  <!-- 4 physical propellers -->
+  <!-- ========================= -->
+
+  <xacro:physical_propeller
+    idx="1"
+    x="${arm_xy}"
+    y="${arm_xy}"
+    yaw="0.785398"
+    mat="red"/>
+
+  <xacro:physical_propeller
+    idx="2"
+    x="${arm_xy}"
+    y="-${arm_xy}"
+    yaw="-0.785398"
+    mat="white"/>
+
+  <xacro:physical_propeller
+    idx="3"
+    x="-${arm_xy}"
+    y="-${arm_xy}"
+    yaw="0.785398"
+    mat="red"/>
+
+  <xacro:physical_propeller
+    idx="4"
+    x="-${arm_xy}"
+    y="${arm_xy}"
+    yaw="-0.785398"
+    mat="white"/>
 
 </robot>
