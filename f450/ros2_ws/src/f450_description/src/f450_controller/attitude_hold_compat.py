@@ -49,6 +49,14 @@ class AttitudeHoldCompatibilityMixin:
         self.position_controller.vy_target = float(value)
 
     @property
+    def yaw_target(self):
+        return self._yaw_target
+
+    @yaw_target.setter
+    def yaw_target(self, value):
+        self._yaw_target = float(value)
+
+    @property
     def kp_x(self):
         return self.position_controller.kp_x
 

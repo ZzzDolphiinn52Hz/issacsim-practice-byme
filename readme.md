@@ -49,6 +49,7 @@ MODULE_NAMES = [
     "f450_controller.motor_mixer",
     "f450_controller.disturbance",
     "f450_controller.propeller_spinner",
+    "f450_controller.tracking_logger",
     "f450_controller.attitude_hold_compat",
     "f450_controller.issac_attitude_hold",
 ]
@@ -76,4 +77,13 @@ f450_app = issac_attitude_hold.F450AttitudeHold(
 f450_app.position_angle_limit_deg = 8.0
 f450_app.position_accel_limit = 1.5
 
+# Optional: log tracking data for plotting.
+f450_app.start_tracking_log("/tmp/f450_tracking.csv", sample_period=0.02)
+
 f450_app.start()
+
+# After the run, stop logging before plotting:
+# f450_app.stop_tracking_log()
+#
+# Plot outside Isaac:
+# python3 src/data/plot_tracking.py /tmp/f450_tracking.csv

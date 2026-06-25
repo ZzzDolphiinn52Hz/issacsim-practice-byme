@@ -16,6 +16,7 @@ from f450_controller.motor_model import MotorModel
 from f450_controller.position_hold import PositionHoldPID
 from f450_controller.propeller_spinner import PhysicalPropellerSpinner
 from f450_controller.disturbance import TestDisturbance
+from f450_controller.tracking_logger import TrackingLogger
 
 
 class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
@@ -70,9 +71,11 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         self.physics_subscription = None
         self.sim_time = 0.0
         self.last_print_time = 0.0
+        self.yaw_target = 0.0
+        self.tracking_logger = None
 
     def start(self):
-        self.stop()
+        self._unsubscribe_physics()
 
         self.physics_subscription = (
             omni.physx.get_physx_interface().subscribe_physics_step_events(
@@ -98,7 +101,7 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         print("Altitude PID:", self.kp_z, self.kd_z, self.ki_z)
         print("Roll/Pitch PD:", self.kp_roll, self.kd_roll, self.kp_pitch, self.kd_pitch)
 
-    def stop(self):
+    def _unsubscribe_physics(self):
         if self.physics_subscription is not None:
             try:
                 self.physics_subscription.unsubscribe()
@@ -106,6 +109,10 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
                 pass
 
         self.physics_subscription = None
+
+    def stop(self):
+        self._unsubscribe_physics()
+        self.stop_tracking_log()
 
     def set_target(self, z_target):
         self.altitude_controller.set_target(z_target)
@@ -222,6 +229,21 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def reset_position_integral(self):
         self.position_controller.reset_integral()
         print("Reset position integral")
+
+    def start_tracking_log(self, csv_path="/tmp/f450_tracking.csv", sample_period=0.02):
+        self.stop_tracking_log()
+        self.tracking_logger = TrackingLogger(csv_path, sample_period=sample_period)
+        self.tracking_logger.start()
+        print("Started tracking log:", self.tracking_logger.csv_path)
+
+    def stop_tracking_log(self):
+        if self.tracking_logger is None:
+            return
+
+        csv_path = self.tracking_logger.csv_path
+        self.tracking_logger.stop()
+        self.tracking_logger = None
+        print("Stopped tracking log:", csv_path)
 
     def compute_position_attitude_target(self, x, y, vx, vy, yaw, dt):
         return self.position_controller.compute_attitude_target(
@@ -358,6 +380,23 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
             )
 
         self.spin_physical_propellers(rpms)
+
+        if self.tracking_logger is not None:
+            self.tracking_logger.log(
+                self.sim_time,
+                x,
+                y,
+                z,
+                roll,
+                pitch,
+                yaw,
+                self.x_target,
+                self.y_target,
+                self.z_target,
+                self.roll_target,
+                self.pitch_target,
+                self.yaw_target,
+            )
 
         if self.sim_time - self.last_print_time > 0.5:
             self.last_print_time = self.sim_time
