@@ -1,57 +1,23 @@
 import math
-import omni
-import omni.timeline
-import omni.physx
+
 import carb
+import omni
+import omni.physx
+import omni.timeline
 
 from omni.isaac.dynamic_control import _dynamic_control
+
+from f450_controller.altitude_hold import AltitudeHoldPID
+from f450_controller.attitude_hold_compat import AttitudeHoldCompatibilityMixin
+from f450_controller.attitude_pid import AttitudeHoldPID
+from f450_controller.control_utils import quat_to_euler
+from f450_controller.motor_mixer import QuadXPwmMixer, build_motor_positions
 from f450_controller.motor_model import MotorModel
+from f450_controller.propeller_spinner import PhysicalPropellerSpinner
+from f450_controller.disturbance import TestDisturbance
 
 
-PWM_MIN = 1100.0
-PWM_MAX = 1940.0
-
-
-def clamp(x, lo, hi):
-    return max(lo, min(x, hi))
-
-
-def wrap_angle(angle):
-    while angle > math.pi:
-        angle -= 2.0 * math.pi
-    while angle < -math.pi:
-        angle += 2.0 * math.pi
-    return angle
-
-
-def quat_to_euler(q):
-    # dynamic_control quaternion thường là x, y, z, w
-    x = q.x
-    y = q.y
-    z = q.z
-    w = q.w
-
-    # roll
-    sinr_cosp = 2.0 * (w * x + y * z)
-    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
-    roll = math.atan2(sinr_cosp, cosr_cosp)
-
-    # pitch
-    sinp = 2.0 * (w * y - z * x)
-    if abs(sinp) >= 1.0:
-        pitch = math.copysign(math.pi / 2.0, sinp)
-    else:
-        pitch = math.asin(sinp)
-
-    # yaw
-    siny_cosp = 2.0 * (w * z + x * y)
-    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
-    yaw = math.atan2(siny_cosp, cosy_cosp)
-
-    return roll, pitch, yaw
-
-
-class F450AttitudeHold:
+class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def __init__(
         self,
         base_link_path="/f450_simple/base_link",
@@ -62,52 +28,18 @@ class F450AttitudeHold:
     ):
         self.base_link_path = base_link_path
 
-        # Altitude target
-        self.z_target = float(z_target)
-        self.vz_target = 0.0
-        self.pwm_hover = float(pwm_hover)
-
-        # Altitude PID, dùng lại gain bạn đã tune ổn
-        self.kp_z = 180.0
-        self.kd_z = 110.0
-        self.ki_z = 25.0
-
-        self.integral_z = 0.0
-        self.integral_limit = 5.0
-
-        # Attitude target
-        self.roll_target = 0.0
-        self.pitch_target = 0.0
-
-        # Attitude PID gain, đơn vị gần đúng:
-        # Kp: us/rad
-        # Ki: us/(rad*s)
-        # Kd: us/(rad/s)
-
-        self.kp_roll = 120.0
-        self.ki_roll = 35.0
-        self.kd_roll = 35.0
-
-        self.kp_pitch = 120.0
-        self.ki_pitch = 35.0
-        self.kd_pitch = 35.0
-
-        self.integral_roll = 0.0
-        self.integral_pitch = 0.0
-        self.attitude_integral_limit = 1.0
-
-        # Giới hạn correction attitude để tránh motor lệch quá mạnh
-        self.attitude_pwm_limit = 180.0
+        self.altitude_controller = AltitudeHoldPID(
+            z_target=z_target,
+            pwm_hover=pwm_hover,
+        )
+        self.attitude_controller = AttitudeHoldPID()
+        self.mixer = QuadXPwmMixer()
+        self.disturbance = TestDisturbance()
+        self.propeller_spinner = PhysicalPropellerSpinner()
 
         self.arm_xy = arm_xy
         self.motor_z = motor_z
-
-        self.motor_positions = [
-            carb.Float3( arm_xy,  arm_xy, motor_z),   # motor 1: front-left
-            carb.Float3( arm_xy, -arm_xy, motor_z),   # motor 2: front-right
-            carb.Float3(-arm_xy, -arm_xy, motor_z),   # motor 3: rear-right
-            carb.Float3(-arm_xy,  arm_xy, motor_z),   # motor 4: rear-left
-        ]
+        self.motor_positions = build_motor_positions(arm_xy, motor_z)
 
         self.motors = [
             MotorModel(),
@@ -127,67 +59,8 @@ class F450AttitudeHold:
         self.timeline = omni.timeline.get_timeline_interface()
 
         self.physics_subscription = None
-
         self.sim_time = 0.0
         self.last_print_time = 0.0
-
-        # disturbance force
-        self.enable_test_disturbance = True
-        self.disturbance_start = 2.0
-        self.disturbance_duration = 0.25
-
-        # Lực nhiễu ngang, Newton
-        self.disturbance_force_y = 3.0
-
-        # Điểm đặt lực cao hơn tâm drone để tạo moment
-        self.disturbance_z_offset = 0.12
-
-        # =========================
-        # Physical propeller joints
-        # =========================
-
-        self.enable_physical_propeller_spin = True
-
-        # Articulation root thường là prim robot chính.
-        # Nếu path này không đúng, ta sẽ thử base_link_path ở hàm init.
-        self.articulation_path = "/f450_simple"
-
-        self.propeller_joint_names = [
-            "propeller_1_joint",
-            "propeller_2_joint",
-            "propeller_3_joint",
-            "propeller_4_joint",
-        ]
-
-        # Chiều quay giả lập của 4 motor
-        self.motor_directions = [
-            1.0,
-            -1.0,
-            1.0,
-            -1.0,
-        ]
-
-        # Để 1.0 là quay theo RPM thật.
-        # Nếu mô phỏng bị nặng/rung, giảm xuống 0.2 hoặc 0.1.
-        self.propeller_speed_scale = 0.9
-
-        self.articulation_handle = None
-        self.propeller_dof_handles = []
-        self.propeller_dofs_initialized = False
-
-    def apply_test_disturbance(self, body_handle):
-        if not self.enable_test_disturbance:
-            return
-
-        if self.disturbance_start <= self.sim_time <= self.disturbance_start + self.disturbance_duration:
-            # Apply lực ngang theo trục Y body frame tại điểm cao hơn tâm drone
-            # Việc này tạo moment làm drone bị nghiêng roll.
-            self.dc.apply_body_force(
-                body_handle,
-                carb.Float3(0.0, self.disturbance_force_y, 0.0),
-                carb.Float3(0.0, 0.0, self.disturbance_z_offset),
-                False,
-            )    
 
     def start(self):
         self.stop()
@@ -217,20 +90,11 @@ class F450AttitudeHold:
         self.physics_subscription = None
 
     def set_target(self, z_target):
-        self.z_target = float(z_target)
-        self.integral_z = 0.0
+        self.altitude_controller.set_target(z_target)
         print("Updated z_target:", self.z_target)
 
     def set_altitude_pid(self, kp_z=None, kd_z=None, ki_z=None):
-        if kp_z is not None:
-            self.kp_z = float(kp_z)
-        if kd_z is not None:
-            self.kd_z = float(kd_z)
-        if ki_z is not None:
-            self.ki_z = float(ki_z)
-
-        self.integral_z = 0.0
-
+        self.altitude_controller.set_pid(kp_z=kp_z, kd_z=kd_z, ki_z=ki_z)
         print(
             "Updated altitude PID:",
             "kp_z =", self.kp_z,
@@ -247,22 +111,14 @@ class F450AttitudeHold:
         ki_pitch=None,
         kd_pitch=None,
     ):
-        if kp_roll is not None:
-            self.kp_roll = float(kp_roll)
-        if ki_roll is not None:
-            self.ki_roll = float(ki_roll)
-        if kd_roll is not None:
-            self.kd_roll = float(kd_roll)
-
-        if kp_pitch is not None:
-            self.kp_pitch = float(kp_pitch)
-        if ki_pitch is not None:
-            self.ki_pitch = float(ki_pitch)
-        if kd_pitch is not None:
-            self.kd_pitch = float(kd_pitch)
-
-        self.reset_attitude_integral()
-
+        self.attitude_controller.set_pid(
+            kp_roll=kp_roll,
+            ki_roll=ki_roll,
+            kd_roll=kd_roll,
+            kp_pitch=kp_pitch,
+            ki_pitch=ki_pitch,
+            kd_pitch=kd_pitch,
+        )
         print(
             "Updated attitude PID:",
             "kp_roll =", self.kp_roll,
@@ -274,108 +130,39 @@ class F450AttitudeHold:
         )
 
     def set_pwm_hover(self, pwm_hover):
-        self.pwm_hover = clamp(float(pwm_hover), PWM_MIN, PWM_MAX)
-        self.integral_z = 0.0
+        self.altitude_controller.set_pwm_hover(pwm_hover)
         print("Updated pwm_hover:", self.pwm_hover)
 
     def reset_integral(self):
-        self.integral_z = 0.0
+        self.altitude_controller.reset_integral()
         print("Reset altitude integral")
 
+    def reset_attitude_integral(self):
+        self.attitude_controller.reset_integral()
+        print("Reset attitude integral")
+
     def compute_altitude_pwm_base(self, z, vz, dt):
-        error_z = self.z_target - z
-        error_vz = self.vz_target - vz
-
-        self.integral_z += error_z * dt
-        self.integral_z = clamp(
-            self.integral_z,
-            -self.integral_limit,
-            self.integral_limit,
-        )
-
-        delta_pwm = (
-            self.kp_z * error_z
-            + self.kd_z * error_vz
-            + self.ki_z * self.integral_z
-        )
-
-        pwm_base = self.pwm_hover + delta_pwm
-        pwm_base = clamp(pwm_base, PWM_MIN, PWM_MAX)
-
-        return pwm_base, error_z, error_vz, delta_pwm
+        return self.altitude_controller.compute_pwm_base(z, vz, dt)
 
     def compute_attitude_correction(self, roll, pitch, ang_vel, dt):
-        error_roll = wrap_angle(self.roll_target - roll)
-        error_pitch = wrap_angle(self.pitch_target - pitch)
-
-        # angular velocity quanh body axes
-        p = ang_vel.x
-        q = ang_vel.y
-
-        # Integral để bù motor mismatch / bias lâu dài
-        self.integral_roll += error_roll * dt
-        self.integral_pitch += error_pitch * dt
-
-        self.integral_roll = clamp(
-            self.integral_roll,
-            -self.attitude_integral_limit,
-            self.attitude_integral_limit,
-        )
-
-        self.integral_pitch = clamp(
-            self.integral_pitch,
-            -self.attitude_integral_limit,
-            self.attitude_integral_limit,
-        )
-
-        roll_corr = (
-            self.kp_roll * error_roll
-            + self.ki_roll * self.integral_roll
-            - self.kd_roll * p
-        )
-
-        pitch_corr = (
-            self.kp_pitch * error_pitch
-            + self.ki_pitch * self.integral_pitch
-            - self.kd_pitch * q
-        )
-
-        roll_corr = clamp(
-            roll_corr,
-            -self.attitude_pwm_limit,
-            self.attitude_pwm_limit,
-        )
-
-        pitch_corr = clamp(
-            pitch_corr,
-            -self.attitude_pwm_limit,
-            self.attitude_pwm_limit,
-        )
-
-        return roll_corr, pitch_corr, error_roll, error_pitch
+        return self.attitude_controller.compute_correction(roll, pitch, ang_vel, dt)
 
     def mix_pwm(self, pwm_base, roll_corr, pitch_corr):
-        # Motor order:
-        # 1 front-left
-        # 2 front-right
-        # 3 rear-right
-        # 4 rear-left
-        #
-        # Với thrust body-z:
-        # roll torque  ~ y * F
-        # pitch torque ~ -x * F
+        return self.mixer.mix(pwm_base, roll_corr, pitch_corr)
 
-        pwm1 = pwm_base + roll_corr - pitch_corr
-        pwm2 = pwm_base - roll_corr - pitch_corr
-        pwm3 = pwm_base - roll_corr + pitch_corr
-        pwm4 = pwm_base + roll_corr + pitch_corr
+    def apply_test_disturbance(self, body_handle):
+        self.disturbance.apply(self.dc, body_handle, self.sim_time)
 
-        return [
-            clamp(pwm1, PWM_MIN, PWM_MAX),
-            clamp(pwm2, PWM_MIN, PWM_MAX),
-            clamp(pwm3, PWM_MIN, PWM_MAX),
-            clamp(pwm4, PWM_MIN, PWM_MAX),
-        ]
+    def init_propeller_dofs(self):
+        self.propeller_spinner.init_dofs(self.dc, self.base_link_path)
+
+    def spin_physical_propellers(self, rpms):
+        self.propeller_spinner.spin(
+            self.dc,
+            self.base_link_path,
+            rpms,
+            self.sim_time,
+        )
 
     def on_physics_step(self, dt):
         self.sim_time += dt
@@ -385,7 +172,7 @@ class F450AttitudeHold:
         if body_handle == _dynamic_control.INVALID_HANDLE:
             carb.log_error(f"Cannot find rigid body: {self.base_link_path}")
             return
-        
+
         self.apply_test_disturbance(body_handle)
 
         pose = self.dc.get_rigid_body_pose(body_handle)
@@ -394,7 +181,6 @@ class F450AttitudeHold:
 
         z = pose.p.z
         vz = lin_vel.z
-
         roll, pitch, yaw = quat_to_euler(pose.r)
 
         pwm_base, error_z, error_vz, delta_pwm_z = self.compute_altitude_pwm_base(
@@ -456,127 +242,4 @@ class F450AttitudeHold:
                 f"PWM={[round(p, 1) for p in self.pwm_commands]} | "
                 f"F_total={sum(thrusts):.3f} | "
                 f"RPM={[round(r, 0) for r in rpms]}"
-            )
-            
-    def reset_attitude_integral(self):
-        self.integral_roll = 0.0
-        self.integral_pitch = 0.0
-        print("Reset attitude integral")
-
-    def init_propeller_dofs(self):
-        if self.propeller_dofs_initialized:
-            return
-
-        if not self.enable_physical_propeller_spin:
-            return
-
-        self.propeller_dof_handles = []
-
-        # Thử lấy articulation theo robot root trước
-        articulation_handle = self.dc.get_articulation(self.articulation_path)
-
-        # Nếu không được, thử theo base_link_path
-        if articulation_handle == _dynamic_control.INVALID_HANDLE:
-            articulation_handle = self.dc.get_articulation(self.base_link_path)
-
-        if articulation_handle == _dynamic_control.INVALID_HANDLE:
-            carb.log_warn(
-                f"Cannot find articulation at {self.articulation_path} "
-                f"or {self.base_link_path}. Propeller joints will not spin."
-            )
-            return
-
-        self.articulation_handle = articulation_handle
-
-        for joint_name in self.propeller_joint_names:
-            dof_handle = self.dc.find_articulation_dof(
-                articulation_handle,
-                joint_name,
-            )
-
-            if dof_handle == _dynamic_control.INVALID_HANDLE:
-                carb.log_warn(f"Cannot find propeller DOF: {joint_name}")
-            else:
-                print("Found propeller DOF:", joint_name)
-
-                # Cấu hình drive cho joint quay theo velocity target
-                try:
-                    props = self.dc.get_dof_properties(dof_handle)
-
-                    try:
-                        props.drive_mode = _dynamic_control.DriveMode.DRIVE_VEL
-                    except Exception:
-                        pass
-
-                    if hasattr(props, "stiffness"):
-                        props.stiffness = 0.0
-
-                    if hasattr(props, "damping"):
-                        props.damping = 1.0
-
-                    if hasattr(props, "max_effort"):
-                        props.max_effort = 100.0
-
-                    if hasattr(props, "max_force"):
-                        props.max_force = 100.0
-
-                    self.dc.set_dof_properties(dof_handle, props)
-
-                    print("Configured velocity drive for", joint_name)
-
-                except Exception as e:
-                    print("Could not configure DOF properties for", joint_name, e)
-
-            self.propeller_dof_handles.append(dof_handle)
-
-        self.propeller_dofs_initialized = True
-
-    def spin_physical_propellers(self, rpms):
-        if not self.enable_physical_propeller_spin:
-            return
-
-        if not self.propeller_dofs_initialized:
-            self.init_propeller_dofs()
-
-        if len(self.propeller_dof_handles) != 4:
-            return
-
-        omega_cmds = []
-
-        for i in range(4):
-            dof_handle = self.propeller_dof_handles[i]
-
-            if dof_handle == _dynamic_control.INVALID_HANDLE:
-                omega_cmds.append(0.0)
-                continue
-
-            rpm = rpms[i]
-
-            # RPM -> rad/s
-            omega = rpm * 2.0 * math.pi / 60.0
-
-            omega_cmd = (
-                self.motor_directions[i]
-                * self.propeller_speed_scale
-                * omega
-            )
-
-            omega_cmds.append(omega_cmd)
-
-            try:
-                self.dc.set_dof_velocity_target(dof_handle, omega_cmd)
-            except Exception as e:
-                try:
-                    self.dc.set_dof_velocity(dof_handle, omega_cmd)
-                except Exception as e2:
-                    pass
-
-        # Debug mỗi 1 giây
-        if self.sim_time - getattr(self, "last_prop_debug_time", 0.0) > 1.0:
-            self.last_prop_debug_time = self.sim_time
-            print(
-                "Propeller omega_cmd:",
-                [round(w, 2) for w in omega_cmds],
-                "RPM:",
-                [round(r, 0) for r in rpms],
             )
