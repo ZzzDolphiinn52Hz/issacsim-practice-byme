@@ -53,7 +53,6 @@ MODULE_NAMES = [
     "f450_controller.position_hold",
     "f450_controller.yaw_hold",
     "f450_controller.motor_mixer",
-    "f450_controller.disturbance",
     "f450_controller.propeller_spinner",
     "f450_controller.tracking_logger",
     "f450_controller.attitude_hold_compat",

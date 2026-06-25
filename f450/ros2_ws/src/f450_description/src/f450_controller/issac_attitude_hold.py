@@ -15,7 +15,6 @@ from f450_controller.motor_mixer import QuadXPwmMixer, build_motor_positions
 from f450_controller.motor_model import MotorModel
 from f450_controller.position_hold import PositionHoldPID
 from f450_controller.propeller_spinner import PhysicalPropellerSpinner
-from f450_controller.disturbance import TestDisturbance
 from f450_controller.tracking_logger import TrackingLogger
 from f450_controller.yaw_hold import YawHoldPID
 
@@ -46,7 +45,6 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         self._auto_set_x_target = x_target is None
         self._auto_set_y_target = y_target is None
         self.mixer = QuadXPwmMixer()
-        self.disturbance = TestDisturbance()
         self.propeller_spinner = PhysicalPropellerSpinner()
 
         self.arm_xy = arm_xy
@@ -290,9 +288,6 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
     def mix_pwm(self, pwm_base, roll_corr, pitch_corr, yaw_corr=0.0):
         return self.mixer.mix(pwm_base, roll_corr, pitch_corr, yaw_corr)
 
-    def apply_test_disturbance(self, body_handle):
-        self.disturbance.apply(self.dc, body_handle, self.sim_time)
-
     def init_propeller_dofs(self):
         self.propeller_spinner.init_dofs(self.dc, self.base_link_path)
 
@@ -353,8 +348,6 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         if body_handle == _dynamic_control.INVALID_HANDLE:
             carb.log_error(f"Cannot find rigid body: {self.base_link_path}")
             return
-
-        self.apply_test_disturbance(body_handle)
 
         pose = self.dc.get_rigid_body_pose(body_handle)
         lin_vel = self.dc.get_rigid_body_linear_velocity(body_handle)

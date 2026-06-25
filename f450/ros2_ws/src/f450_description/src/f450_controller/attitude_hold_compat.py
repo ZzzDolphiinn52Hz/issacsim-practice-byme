@@ -353,46 +353,6 @@ class AttitudeHoldCompatibilityMixin:
         self.attitude_controller.pwm_limit = float(value)
 
     @property
-    def enable_test_disturbance(self):
-        return self.disturbance.enabled
-
-    @enable_test_disturbance.setter
-    def enable_test_disturbance(self, value):
-        self.disturbance.enabled = bool(value)
-
-    @property
-    def disturbance_start(self):
-        return self.disturbance.start_time
-
-    @disturbance_start.setter
-    def disturbance_start(self, value):
-        self.disturbance.start_time = float(value)
-
-    @property
-    def disturbance_duration(self):
-        return self.disturbance.duration
-
-    @disturbance_duration.setter
-    def disturbance_duration(self, value):
-        self.disturbance.duration = float(value)
-
-    @property
-    def disturbance_force_y(self):
-        return self.disturbance.force_y
-
-    @disturbance_force_y.setter
-    def disturbance_force_y(self, value):
-        self.disturbance.force_y = float(value)
-
-    @property
-    def disturbance_z_offset(self):
-        return self.disturbance.z_offset
-
-    @disturbance_z_offset.setter
-    def disturbance_z_offset(self, value):
-        self.disturbance.z_offset = float(value)
-
-    @property
     def enable_physical_propeller_spin(self):
         return self.propeller_spinner.enabled
 
