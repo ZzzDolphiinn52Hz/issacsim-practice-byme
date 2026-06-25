@@ -13,8 +13,8 @@ f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
 For realtime plotting, run this in another terminal while Isaac Sim is running:
 
 ```bash
-python3 f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py \
-  f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
   --wait --window 20
 ```
 
@@ -27,8 +27,8 @@ f450_app.stop_tracking_log()
 Then create the final static plot:
 
 ```bash
-python3 f450/ros2_ws/src/f450_description/src/data/plot_tracking.py \
-  f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_tracking.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
 ```
 
 The plot contains target vs actual signals for:
