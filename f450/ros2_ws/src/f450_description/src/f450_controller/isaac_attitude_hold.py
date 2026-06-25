@@ -79,12 +79,22 @@ class F450AttitudeHold:
         self.roll_target = 0.0
         self.pitch_target = 0.0
 
-        # Attitude PD gain, đơn vị gần đúng: microsecond/rad
+        # Attitude PID gain, đơn vị gần đúng:
+        # Kp: us/rad
+        # Ki: us/(rad*s)
+        # Kd: us/(rad/s)
+
         self.kp_roll = 120.0
+        self.ki_roll = 35.0
         self.kd_roll = 35.0
 
         self.kp_pitch = 120.0
+        self.ki_pitch = 35.0
         self.kd_pitch = 35.0
+
+        self.integral_roll = 0.0
+        self.integral_pitch = 0.0
+        self.attitude_integral_limit = 1.0
 
         # Giới hạn correction attitude để tránh motor lệch quá mạnh
         self.attitude_pwm_limit = 180.0
@@ -131,13 +141,6 @@ class F450AttitudeHold:
 
         # Điểm đặt lực cao hơn tâm drone để tạo moment
         self.disturbance_z_offset = 0.12
-
-        self.motor_thrust_scale = [
-            1.00,
-            0.97,
-            1.03,
-            0.99,
-        ]
 
     def apply_test_disturbance(self, body_handle):
         if not self.enable_test_disturbance:
@@ -202,21 +205,38 @@ class F450AttitudeHold:
             "ki_z =", self.ki_z,
         )
 
-    def set_attitude_pd(self, kp_roll=None, kd_roll=None, kp_pitch=None, kd_pitch=None):
+    def set_attitude_pid(
+        self,
+        kp_roll=None,
+        ki_roll=None,
+        kd_roll=None,
+        kp_pitch=None,
+        ki_pitch=None,
+        kd_pitch=None,
+    ):
         if kp_roll is not None:
             self.kp_roll = float(kp_roll)
+        if ki_roll is not None:
+            self.ki_roll = float(ki_roll)
         if kd_roll is not None:
             self.kd_roll = float(kd_roll)
+
         if kp_pitch is not None:
             self.kp_pitch = float(kp_pitch)
+        if ki_pitch is not None:
+            self.ki_pitch = float(ki_pitch)
         if kd_pitch is not None:
             self.kd_pitch = float(kd_pitch)
 
+        self.reset_attitude_integral()
+
         print(
-            "Updated attitude PD:",
+            "Updated attitude PID:",
             "kp_roll =", self.kp_roll,
+            "ki_roll =", self.ki_roll,
             "kd_roll =", self.kd_roll,
             "kp_pitch =", self.kp_pitch,
+            "ki_pitch =", self.ki_pitch,
             "kd_pitch =", self.kd_pitch,
         )
 
@@ -251,7 +271,7 @@ class F450AttitudeHold:
 
         return pwm_base, error_z, error_vz, delta_pwm
 
-    def compute_attitude_correction(self, roll, pitch, ang_vel):
+    def compute_attitude_correction(self, roll, pitch, ang_vel, dt):
         error_roll = wrap_angle(self.roll_target - roll)
         error_pitch = wrap_angle(self.pitch_target - pitch)
 
@@ -259,8 +279,33 @@ class F450AttitudeHold:
         p = ang_vel.x
         q = ang_vel.y
 
-        roll_corr = self.kp_roll * error_roll - self.kd_roll * p
-        pitch_corr = self.kp_pitch * error_pitch - self.kd_pitch * q
+        # Integral để bù motor mismatch / bias lâu dài
+        self.integral_roll += error_roll * dt
+        self.integral_pitch += error_pitch * dt
+
+        self.integral_roll = clamp(
+            self.integral_roll,
+            -self.attitude_integral_limit,
+            self.attitude_integral_limit,
+        )
+
+        self.integral_pitch = clamp(
+            self.integral_pitch,
+            -self.attitude_integral_limit,
+            self.attitude_integral_limit,
+        )
+
+        roll_corr = (
+            self.kp_roll * error_roll
+            + self.ki_roll * self.integral_roll
+            - self.kd_roll * p
+        )
+
+        pitch_corr = (
+            self.kp_pitch * error_pitch
+            + self.ki_pitch * self.integral_pitch
+            - self.kd_pitch * q
+        )
 
         roll_corr = clamp(
             roll_corr,
@@ -329,6 +374,7 @@ class F450AttitudeHold:
             roll,
             pitch,
             ang_vel,
+            dt,
         )
 
         self.pwm_commands = self.mix_pwm(
@@ -346,9 +392,6 @@ class F450AttitudeHold:
                 self.pwm_commands[i],
                 dt,
             )
-
-            # Giả lập motor/propeller không giống nhau tuyệt đối
-            thrust = thrust * self.motor_thrust_scale[i]
 
             thrusts.append(thrust)
             currents.append(current)
@@ -371,9 +414,16 @@ class F450AttitudeHold:
                 f"err_z={error_z:.3f} | "
                 f"roll={math.degrees(roll):.2f}deg | "
                 f"pitch={math.degrees(pitch):.2f}deg | "
+                f"Iroll={self.integral_roll:.3f} | "
+                f"Ipitch={self.integral_pitch:.3f} | "
                 f"rCorr={roll_corr:.1f} | "
                 f"pCorr={pitch_corr:.1f} | "
                 f"PWM={[round(p, 1) for p in self.pwm_commands]} | "
                 f"F_total={sum(thrusts):.3f} | "
                 f"RPM={[round(r, 0) for r in rpms]}"
             )
+            
+    def reset_attitude_integral(self):
+        self.integral_roll = 0.0
+        self.integral_pitch = 0.0
+        print("Reset attitude integral")
