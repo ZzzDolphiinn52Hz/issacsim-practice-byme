@@ -72,3 +72,565 @@ The 2D plots contain target vs actual signals for:
 - `yaw`
 
 Position units are meters. Angle plots use degrees.
+
+
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                        
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                       ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Warning] [omni.isaac.dynamic_control.plugin] Failed to find articulation at '/f450_simple'
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                        
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                       ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                        
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:  File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:    x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:                       ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Warning] [omni.kit.window.script_editor.editor_tab] Failed to parse error, please report a bug. Error:RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:18  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 994 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 145, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     lookahead=LOOKAHEAD_DT,
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/opt/miniconda3/envs/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/kernel/py/omni/kit/app/_impl/__init__.py", line 128, in write
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     func(f"[py {self._name}]: {text}")
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/opt/miniconda3/envs/env_isaaclab/lib/python3.11/site-packages/isaacsim/kit/kernel/py/carb/__init__.py", line 56, in log_info
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     file, lno, func, mod = _get_caller_info()
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                            ^^^^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:19  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:20  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: Traceback (most recent call last):
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 154, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     print(
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: ^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   [Previous line repeated 995 more times]
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 132, in _circle_step
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     t = _sim_time_ref[0]
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:                         
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:   File "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/scripr_editor/circle_trajectory.py", line 59, in circle_setpoint
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:     x_tgt   = cx + r * math.cos(angle)
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]:                        ^^^^^^^^^^^^^^^
+2026-06-26 07:06:21  [Error] [omni.kit.app._impl] [py stderr]: RecursionError: maximum recursion depth exceeded while calling a Python object
