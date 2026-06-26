@@ -9,7 +9,7 @@ class PhysicalPropellerSpinner:
     def __init__(
         self,
         enabled=True,
-        articulation_path="/f450_simple",
+        articulation_path="/f450_simple/base_link",
         joint_names=None,
         motor_directions=None,
         speed_scale=0.7,

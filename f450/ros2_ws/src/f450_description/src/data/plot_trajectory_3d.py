@@ -66,6 +66,19 @@ def parse_args():
                    help="Live mode: keep only last N samples. 0 = all.")
     p.add_argument("--max-points", type=int, default=0,
                    help="Downsample for display if data is large. 0 = off.")
+
+    # Plot limits. Default is fixed because live autoscale makes the 3D view
+    # shrink/jump while the CSV is still being written.
+    p.add_argument("--auto-limits", action="store_true",
+                   help="Use automatic axis limits instead of fixed limits.")
+    p.add_argument("--xy-limit", type=float, default=3.0,
+                   help="Fixed XY half-range in metres. Default: 3.0")
+    p.add_argument("--z-min", type=float, default=0.0,
+                   help="Fixed Z lower limit. Default: 0.0")
+    p.add_argument("--z-max", type=float, default=3.0,
+                   help="Fixed Z upper limit. Default: 3.0")
+    p.add_argument("--live-colorbar", action="store_true",
+                   help="Show colorbar in live mode. Default: off to avoid axes shrinkage.")
     return p.parse_args()
 
 
@@ -255,7 +268,8 @@ def build_figure():
 # ---------------------------------------------------------------------------
 
 def render_static(ax, data, show_attitude=False, attitude_step=20,
-                  add_colorbar=True, stats_text_obj=None):
+                  add_colorbar=True, stats_text_obj=None,
+                  fixed_limits=True, xy_limit=3.0, z_min=0.0, z_max=3.0):
     """
     Draw 3D path geometry onto ax (clears first).
 
@@ -269,6 +283,7 @@ def render_static(ax, data, show_attitude=False, attitude_step=20,
         updated in-place instead of creating a new Text artist each frame
     """
     ax.cla()
+
     ax.set_xlabel("X  (m)")
     ax.set_ylabel("Y  (m)")
     ax.set_zlabel("Z  (m)")
@@ -301,9 +316,21 @@ def render_static(ax, data, show_attitude=False, attitude_step=20,
         draw_attitude_arrows(ax, data, step=attitude_step)
 
     # --- axis limits ---
-    ax.set_xlim(*_axis_lim(xs + xt))
-    ax.set_ylim(*_axis_lim(ys + yt))
-    ax.set_zlim(*_axis_lim(zs + zt))
+    # In live mode, autoscale makes the plot jump/shrink as new CSV rows arrive.
+    # Keep fixed axes by default so the circular trajectory is drawn in a stable frame.
+    if fixed_limits:
+        ax.set_xlim(-xy_limit, xy_limit)
+        ax.set_ylim(-xy_limit, xy_limit)
+        ax.set_zlim(z_min, z_max)
+        ax.set_box_aspect((2.0 * xy_limit, 2.0 * xy_limit, max(z_max - z_min, 1e-6)))
+    else:
+        ax.set_xlim(*_axis_lim(xs + xt))
+        ax.set_ylim(*_axis_lim(ys + yt))
+        ax.set_zlim(*_axis_lim(zs + zt))
+        x0, x1 = ax.get_xlim()
+        y0, y1 = ax.get_ylim()
+        z0, z1 = ax.get_zlim()
+        ax.set_box_aspect((x1 - x0, y1 - y0, max(z1 - z0, 1e-6)))
 
     ax.legend(loc="upper left", fontsize=9)
 
@@ -358,7 +385,11 @@ def run_static(args):
     fig, ax = build_figure()
     render_static(ax, data,
                   show_attitude=args.attitude,
-                  attitude_step=args.attitude_step)
+                  attitude_step=args.attitude_step,
+                  fixed_limits=not args.auto_limits,
+                  xy_limit=args.xy_limit,
+                  z_min=args.z_min,
+                  z_max=args.z_max)
 
     out = args.output or default_output(args.csv_path)
     fig.tight_layout()
@@ -412,8 +443,14 @@ def run_live(args):
             ax, data,
             show_attitude=args.attitude,
             attitude_step=args.attitude_step,
-            add_colorbar=True,
+            # In live mode colorbar recreation can shrink/jitter the 3D axes.
+            # Keep it off by default; enable with --live-colorbar if needed.
+            add_colorbar=args.live_colorbar,
             stats_text_obj=_live["stats_text"],   # reuse, update in-place
+            fixed_limits=not args.auto_limits,
+            xy_limit=args.xy_limit,
+            z_min=args.z_min,
+            z_max=args.z_max,
         )
         _live["cbar"]       = cbar
         _live["stats_text"] = stats_text

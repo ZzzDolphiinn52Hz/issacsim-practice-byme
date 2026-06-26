@@ -75,7 +75,7 @@ f450_app = issac_attitude_hold.F450AttitudeHold(
     z_target=1.0,
 
     # Gia tri da tune tu file tracking gan day.
-    pwm_hover=1307.0,
+    pwm_hover=1650.0,
 )
 
 # Gioi han goc nghieng do bo dieu khien XY tao ra.
