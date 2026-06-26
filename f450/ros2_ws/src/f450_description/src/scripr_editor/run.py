@@ -49,7 +49,7 @@ f450_app = issac_attitude_hold.F450AttitudeHold(
     # x_target=0.0,
     # y_target=0.0,
     z_target=1.0,
-    pwm_hover=1550.0,
+    pwm_hover=1650.0,
 )
 
 # Optional tuning for XY position hold.
