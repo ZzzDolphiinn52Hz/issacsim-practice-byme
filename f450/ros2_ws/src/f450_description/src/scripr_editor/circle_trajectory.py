@@ -83,6 +83,30 @@ _circle_started = [False]  # co hieu bay vong tron da bat dau chua
 _orig_on_step   = [None]   # luu physics callback goc
 
 
+def _class_physics_step(app):
+    """Return the original controller method, bypassing any script wrapper."""
+    return app.__class__.on_physics_step.__get__(app, app.__class__)
+
+
+def _unwrap_original_callback(app):
+    """
+    Lay callback goc cua controller.
+
+    Isaac Script Editor hay dung importlib.reload(), nen wrapper cu co the con
+    nam tren app.on_physics_step. Ban moi duoc danh dau bang __circle_traj__,
+    con ban cu thi chi nhan ra duoc qua ten ham _circle_step.
+    """
+    callback = app.on_physics_step
+
+    while getattr(callback, "__circle_traj__", False):
+        callback = callback.__wrapped__
+
+    if getattr(callback, "__name__", "") == "_circle_step":
+        return _class_physics_step(app)
+
+    return callback
+
+
 def start(app):
     """
     Goi ham nay trong Script Editor sau khi f450_app da duoc khoi tao.
@@ -114,17 +138,7 @@ def start(app):
     # Bat dau ghi log
     app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
 
-    # Unwrap bat ky _circle_step wrapper cu nao con sot lai tren app.on_physics_step.
-    # Can thiet khi importlib.reload() duoc goi: luc do _orig_on_step[0] reset ve None
-    # nhung app.on_physics_step van tro den old _circle_step. Neu khong unwrap, ta se
-    # capture old _circle_step lam _orig_cb, dan den chuoi goi long nhau/de quy.
-    # Moi _circle_step duoc danh dau __circle_traj__=True va __wrapped__ tro den
-    # callback that su no bao boc -- ta chi can di qua chuoi do.
-    _real_orig = app.on_physics_step
-    while getattr(_real_orig, '__circle_traj__', False):
-        _real_orig = _real_orig.__wrapped__
-
-    _orig_cb         = _real_orig   # callback that, khong phai wrapper cua chung ta
+    _orig_cb         = _unwrap_original_callback(app)
     _orig_on_step[0] = _orig_cb     # luu de stop() co the restore
 
     def _circle_step(dt):
@@ -189,10 +203,13 @@ def start(app):
 
 def stop(app):
     """Restore physics callback goc va dung tracking log."""
-    if _orig_on_step[0] is not None:
-        app.on_physics_step = _orig_on_step[0]
-        _orig_on_step[0]    = None
-        app.start()
+    orig_cb = _orig_on_step[0]
+    if orig_cb is None:
+        orig_cb = _unwrap_original_callback(app)
+
+    app.on_physics_step = orig_cb
+    _orig_on_step[0] = None
+    app.start()
 
     app.stop_tracking_log()
     print("circle_trajectory: STOPPED")

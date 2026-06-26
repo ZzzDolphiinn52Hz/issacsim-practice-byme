@@ -145,6 +145,8 @@ ct.TRACKING_CSV = TRACKING_CSV
 ct.start(f450_app)
 ```
 
+Co the Run lai block tren neu muon doi thong so circle. Script se tu go callback cu de tranh loi `RecursionError`.
+
 De dung quy dao hinh tron va luu log:
 
 ```python
@@ -199,3 +201,4 @@ python3 f450/ros2_ws/src/f450_description/src/data/plot_trajectory_3d.py f450/ro
 - Block 4 dung de bay theo hinh tron.
 - Block 5 nen chay truoc khi tat Isaac Sim de dong file CSV.
 - Neu Run lai block 2, controller cu se duoc stop truoc roi moi tao controller moi.
+- Neu Isaac Sim da bao `RecursionError` o `circle_trajectory.py`, chay lai block 2 mot lan de tao controller sach, sau do moi chay lai block 4.
