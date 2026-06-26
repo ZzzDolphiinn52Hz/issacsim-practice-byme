@@ -32,7 +32,37 @@ python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_tr
   ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
 ```
 
-The plot contains target vs actual signals for:
+## 3D trajectory viewer
+
+Static (after simulation):
+
+```bash
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_trajectory_3d.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --show
+```
+
+Live (while Isaac Sim is running):
+
+```bash
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_trajectory_3d.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --live --wait --interval 500
+```
+
+With attitude arrows (forward + up vectors along the path):
+
+```bash
+python3 plot_trajectory_3d.py f450_tracking.csv --show --attitude --attitude-step 15
+```
+
+Output: `<csv>_traj3d.png` (default) or specify with `-o path.png`.
+
+---
+
+## 2D tracking plots
+
+The 2D plots contain target vs actual signals for:
 
 - `x`
 - `y`
