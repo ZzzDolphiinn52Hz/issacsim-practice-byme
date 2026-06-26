@@ -100,6 +100,8 @@ f450_app.start()
 # python3 f450/ros2_ws/src/f450_description/src/data/plot_tracking.py f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
 
 # circle trajectory
+f450_app = issac_attitude_hold.F450AttitudeHold(...)
+f450_app.start()
 # Run this after f450_app has been created by the script editor block above.
 SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
 if SCRIPT_PATH not in sys.path:
