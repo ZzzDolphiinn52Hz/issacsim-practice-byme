@@ -66,15 +66,15 @@ def circle_setpoint(t, cx, cy, r, period, z, lookahead=0.0):
 # ---------------------------------------------------------------------------
 # Paste doan nay vao Script Editor va nhan Run:
 #
-#   import importlib, sys, os
-#   CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
-#   SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
-#   for path in (CONTROLLER_PATH, SCRIPT_PATH):
-#       if path not in sys.path:
-#           sys.path.insert(0, path)
-#   import circle_trajectory as ct
-#   importlib.reload(ct)
-#   ct.start(f450_app)
+import importlib, sys, os
+CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
+SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
+for path in (CONTROLLER_PATH, SCRIPT_PATH):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+import circle_trajectory as ct
+importlib.reload(ct)
+ct.start(f450_app)
 #
 # ---------------------------------------------------------------------------
 
