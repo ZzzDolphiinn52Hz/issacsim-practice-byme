@@ -66,15 +66,15 @@ def circle_setpoint(t, cx, cy, r, period, z, lookahead=0.0):
 # ---------------------------------------------------------------------------
 # Paste doan nay vao Script Editor va nhan Run:
 #
-import importlib, sys, os
-CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
-SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
-for path in (CONTROLLER_PATH, SCRIPT_PATH):
-    if path not in sys.path:
-        sys.path.insert(0, path)
-import circle_trajectory as ct
-importlib.reload(ct)
-ct.start(f450_app)
+#   import importlib, sys, os
+#   CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
+#   SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
+#   for path in (CONTROLLER_PATH, SCRIPT_PATH):
+#       if path not in sys.path:
+#           sys.path.insert(0, path)
+#   import circle_trajectory as ct
+#   importlib.reload(ct)
+#   ct.start(f450_app)
 #
 # ---------------------------------------------------------------------------
 
@@ -114,9 +114,18 @@ def start(app):
     # Bat dau ghi log
     app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
 
-    # Hook vao physics step de cap nhat setpoint tung frame
-    # (Luu lai ham goc de restore khi stop)
-    _orig_on_step[0] = app.on_physics_step
+    # Unwrap bat ky _circle_step wrapper cu nao con sot lai tren app.on_physics_step.
+    # Can thiet khi importlib.reload() duoc goi: luc do _orig_on_step[0] reset ve None
+    # nhung app.on_physics_step van tro den old _circle_step. Neu khong unwrap, ta se
+    # capture old _circle_step lam _orig_cb, dan den chuoi goi long nhau/de quy.
+    # Moi _circle_step duoc danh dau __circle_traj__=True va __wrapped__ tro den
+    # callback that su no bao boc -- ta chi can di qua chuoi do.
+    _real_orig = app.on_physics_step
+    while getattr(_real_orig, '__circle_traj__', False):
+        _real_orig = _real_orig.__wrapped__
+
+    _orig_cb         = _real_orig   # callback that, khong phai wrapper cua chung ta
+    _orig_on_step[0] = _orig_cb     # luu de stop() co the restore
 
     def _circle_step(dt):
         _sim_time_ref[0] += dt
@@ -148,10 +157,13 @@ def start(app):
                     f"setpoint=({x_tgt:.2f}, {y_tgt:.2f}, {z_tgt:.2f})"
                 )
 
-        # Goi controller goc
-        orig = _orig_on_step[0]
-        if orig is not None:
-            orig(dt)
+        # Goi callback that su (da unwrap), KHONG bao gio doc _orig_on_step[0]
+        if _orig_cb is not None:
+            _orig_cb(dt)
+
+    # Danh dau wrapper de start() co the unwrap no sau nay (ke ca sau reload)
+    _circle_step.__circle_traj__ = True
+    _circle_step.__wrapped__     = _orig_cb
 
     app.on_physics_step = _circle_step
     app.start()
