@@ -98,3 +98,16 @@ f450_app.start()
 #
 # Static plot outside Isaac:
 # python3 f450/ros2_ws/src/f450_description/src/data/plot_tracking.py f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
+
+# circle trajectory
+# Run this after f450_app has been created by the script editor block above.
+SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
+if SCRIPT_PATH not in sys.path:
+    sys.path.insert(0, SCRIPT_PATH)
+
+import circle_trajectory as ct
+importlib.reload(ct)
+ct.start(f450_app)
+
+# To stop circle trajectory and close the CSV log:
+# ct.stop(f450_app)

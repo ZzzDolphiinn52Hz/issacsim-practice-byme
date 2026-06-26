@@ -67,8 +67,11 @@ def circle_setpoint(t, cx, cy, r, period, z, lookahead=0.0):
 # Paste doan nay vao Script Editor va nhan Run:
 #
 #   import importlib, sys, os
-#   sys.path.insert(0, os.path.expanduser(
-#       "~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"))
+#   CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
+#   SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
+#   for path in (CONTROLLER_PATH, SCRIPT_PATH):
+#       if path not in sys.path:
+#           sys.path.insert(0, path)
 #   import circle_trajectory as ct
 #   importlib.reload(ct)
 #   ct.start(f450_app)
@@ -151,6 +154,7 @@ def start(app):
             orig(dt)
 
     app.on_physics_step = _circle_step
+    app.start()
 
     print("=" * 60)
     print("circle_trajectory: STARTED")
@@ -176,6 +180,7 @@ def stop(app):
     if _orig_on_step[0] is not None:
         app.on_physics_step = _orig_on_step[0]
         _orig_on_step[0]    = None
+        app.start()
 
     app.stop_tracking_log()
     print("circle_trajectory: STOPPED")
