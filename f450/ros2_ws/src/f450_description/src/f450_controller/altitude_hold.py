@@ -6,7 +6,7 @@ class AltitudeHoldPID:
         self,
         z_target=3.0,
         vz_target=0.0,
-        pwm_hover=1307.0,
+        pwm_hover=1650.0,
         kp_z=220.0,
         kd_z=150.0,
         ki_z=15.0,
