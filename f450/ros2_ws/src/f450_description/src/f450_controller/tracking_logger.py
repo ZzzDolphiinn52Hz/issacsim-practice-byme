@@ -4,13 +4,20 @@ import os
 
 
 class TrackingLogger:
+    ########## INIT TRACKING LOGGER ##########
+    # Chuan hoa duong dan CSV, dat chu ky lay mau va khoi tao cac handle file/
+    # writer se duoc mo khi start().
     def __init__(self, csv_path, sample_period=0.02):
+        # Duong dan output va chu ky lay mau toi thieu giua hai dong log.
         self.csv_path = os.path.abspath(os.path.expanduser(csv_path))
         self.sample_period = max(float(sample_period), 0.0)
         self.last_sample_time = None
+        # File handle va DictWriter chi ton tai sau khi start().
         self.file = None
         self.writer = None
 
+    ########## START CSV LOGGING ##########
+    # Tao thu muc dich, mo file CSV moi, ghi header va san sang nhan mau log.
     def start(self):
         os.makedirs(os.path.dirname(self.csv_path), exist_ok=True)
         self.file = open(self.csv_path, "w", newline="")
@@ -42,6 +49,8 @@ class TrackingLogger:
         self.file.flush()
         self.last_sample_time = None
 
+    ########## STOP CSV LOGGING ##########
+    # Flush va dong file log neu logger dang mo.
     def stop(self):
         if self.file is None:
             return
@@ -51,6 +60,9 @@ class TrackingLogger:
         self.file = None
         self.writer = None
 
+    ########## WRITE TRACKING SAMPLE ##########
+    # Ghi mot mau trang thai/target cua drone vao CSV, ton trong sample_period
+    # de khong ghi qua day file.
     def log(
         self,
         sim_time,

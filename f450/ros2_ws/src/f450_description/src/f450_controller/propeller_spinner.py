@@ -6,6 +6,9 @@ from omni.isaac.dynamic_control import _dynamic_control
 
 
 class PhysicalPropellerSpinner:
+    ########## INIT PHYSICAL PROPELLER SPINNER ##########
+    # Luu cau hinh cac joint canh quat vat ly, chieu quay cua motor va ti le
+    # chuyen RPM mo phong thanh van toc joint trong Isaac Sim.
     def __init__(
         self,
         enabled=True,
@@ -14,22 +17,29 @@ class PhysicalPropellerSpinner:
         motor_directions=None,
         speed_scale=0.7,
     ):
+        # Cau hinh bat/tat va duong dan articulation chua joint canh quat.
         self.enabled = enabled
         self.articulation_path = articulation_path
+        # Ten 4 joint canh quat theo thu tu motor.
         self.joint_names = joint_names or [
             "propeller_1_joint",
             "propeller_2_joint",
             "propeller_3_joint",
             "propeller_4_joint",
         ]
+        # Chieu quay cua tung motor va ti le hien thi toc do quay.
         self.motor_directions = motor_directions or [1.0, -1.0, 1.0, -1.0]
         self.speed_scale = float(speed_scale)
 
+        # Handle dynamic_control duoc tim trong init_dofs().
         self.articulation_handle = None
         self.dof_handles = []
         self.initialized = False
         self.last_debug_time = 0.0
 
+    ########## INIT PROPELLER DOFS ##########
+    # Tim articulation va DOF cua 4 joint canh quat, sau do cau hinh velocity
+    # drive de co the dat van toc quay truc tiep.
     def init_dofs(self, dc, base_link_path):
         if self.initialized or not self.enabled:
             return
@@ -66,6 +76,9 @@ class PhysicalPropellerSpinner:
 
         self.initialized = True
 
+    ########## SPIN PHYSICAL PROPELLERS ##########
+    # Nhan RPM tu motor model, doi sang rad/s co tinh chieu quay, roi dat target
+    # velocity cho tung DOF canh quat.
     def spin(self, dc, base_link_path, rpms, sim_time):
         if not self.enabled:
             return
@@ -106,6 +119,9 @@ class PhysicalPropellerSpinner:
                 [round(r, 0) for r in rpms],
             )
 
+    ########## CONFIGURE VELOCITY DRIVE ##########
+    # Dat DOF sang che do dieu khien van toc va cau hinh damping/max effort de
+    # joint co the quay theo lenh omega_cmd.
     def _configure_velocity_drive(self, dc, dof_handle, joint_name):
         try:
             props = dc.get_dof_properties(dof_handle)

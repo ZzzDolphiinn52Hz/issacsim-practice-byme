@@ -5,10 +5,14 @@ PWM_MIN = 1100.0
 PWM_MAX = 1940.0
 
 
+########## CLAMP VALUE ##########
+# Kep gia tri x trong khoang [lo, hi], dung de bao ve PWM, goc va tich phan PID.
 def clamp(x, lo, hi):
     return max(lo, min(x, hi))
 
 
+########## WRAP ANGLE ##########
+# Dua goc radian ve khoang [-pi, pi] de tinh sai so goc theo duong ngan nhat.
 def wrap_angle(angle):
     while angle > math.pi:
         angle -= 2.0 * math.pi
@@ -17,6 +21,8 @@ def wrap_angle(angle):
     return angle
 
 
+########## QUATERNION TO EULER ##########
+# Chuyen quaternion cua Isaac/dynamic_control sang roll, pitch, yaw theo radian.
 def quat_to_euler(q):
     # dynamic_control quaternion is x, y, z, w.
     x = q.x

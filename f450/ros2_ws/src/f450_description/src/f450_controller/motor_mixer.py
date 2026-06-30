@@ -3,6 +3,9 @@ import carb
 from f450_controller.control_utils import PWM_MAX, PWM_MIN, clamp
 
 
+########## BUILD MOTOR POSITIONS ##########
+# Tao vi tri 4 motor so voi base_link cua frame quad X. Thu tu nay phai khop voi
+# cong thuc mixer va thu tu motor model ben duoi.
 def build_motor_positions(arm_xy=0.159, motor_z=0.04):
     return [
         carb.Float3(arm_xy, arm_xy, motor_z),    # motor 1: front-left
@@ -13,6 +16,9 @@ def build_motor_positions(arm_xy=0.159, motor_z=0.04):
 
 
 class QuadXPwmMixer:
+    ########## MIX PWM COMMANDS ##########
+    # Tron PWM nen voi hieu chinh roll, pitch, yaw de tao lenh PWM rieng cho 4
+    # motor cua cau hinh quad X.
     def mix(self, pwm_base, roll_corr, pitch_corr, yaw_corr=0.0):
         # Body-z thrust: roll torque ~ y * F, pitch torque ~ -x * F.
         #

@@ -2,6 +2,9 @@ from f450_controller.control_utils import clamp, wrap_angle
 
 
 class AttitudeHoldPID:
+    ########## INIT ATTITUDE PID ##########
+    # Khoi tao bo giu roll/pitch: target goc, he so PID, bo nho tich phan va
+    # gioi han bien do PWM hieu chinh.
     def __init__(
         self,
         roll_target=0.0,
@@ -15,22 +18,29 @@ class AttitudeHoldPID:
         integral_limit=1.0,
         pwm_limit=260.0,
     ):
+        # Goc roll/pitch mong muon theo radian.
         self.roll_target = float(roll_target)
         self.pitch_target = float(pitch_target)
 
+        # He so PID cho truc roll.
         self.kp_roll = float(kp_roll)
         self.ki_roll = float(ki_roll)
         self.kd_roll = float(kd_roll)
 
+        # He so PID cho truc pitch.
         self.kp_pitch = float(kp_pitch)
         self.ki_pitch = float(ki_pitch)
         self.kd_pitch = float(kd_pitch)
 
+        # Bo nho tich phan va gioi han PWM correction.
         self.integral_roll = 0.0
         self.integral_pitch = 0.0
         self.integral_limit = float(integral_limit)
         self.pwm_limit = float(pwm_limit)
 
+    ########## SET ATTITUDE PID PARAMS ##########
+    # Cap nhat rieng tung he so PID cua roll va pitch. Gia tri None nghia la
+    # khong thay doi tham so do.
     def set_pid(
         self,
         kp_roll=None,
@@ -56,10 +66,15 @@ class AttitudeHoldPID:
 
         self.reset_integral()
 
+    ########## RESET ATTITUDE INTEGRAL ##########
+    # Xoa tich phan roll/pitch de tranh lenh cu con anh huong sau khi doi tham so.
     def reset_integral(self):
         self.integral_roll = 0.0
         self.integral_pitch = 0.0
 
+    ########## COMPUTE ROLL PITCH CORRECTION ##########
+    # Tinh do lech PWM cho roll va pitch tu goc hien tai, target va van toc goc
+    # than may bay. Ket qua duoc kep theo pwm_limit truoc khi dua vao mixer.
     def compute_correction(self, roll, pitch, ang_vel, dt):
         error_roll = wrap_angle(self.roll_target - roll)
         error_pitch = wrap_angle(self.pitch_target - pitch)

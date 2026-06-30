@@ -4,6 +4,9 @@ from f450_controller.control_utils import clamp
 
 
 class PositionHoldPID:
+    ########## INIT POSITION PID ##########
+    # Khoi tao bo giu vi tri XY: target vi tri/van toc, he so PID, gioi han
+    # tich phan, gioi han gia toc va gioi han goc nghieng.
     def __init__(
         self,
         x_target=0.0,
@@ -22,29 +25,37 @@ class PositionHoldPID:
         angle_limit_deg=6.5,
         gravity=9.81,
     ):
+        # Trang thai bat/tat vong giu vi tri XY.
         self.enabled = bool(enabled)
 
+        # Target vi tri va van toc theo he truc world.
         self.x_target = float(x_target)
         self.y_target = float(y_target)
         self.vx_target = float(vx_target)
         self.vy_target = float(vy_target)
 
+        # He so PID cho truc x.
         self.kp_x = float(kp_x)
         self.kd_x = float(kd_x)
         self.ki_x = float(ki_x)
 
+        # He so PID cho truc y.
         self.kp_y = float(kp_y)
         self.kd_y = float(kd_y)
         self.ki_y = float(ki_y)
 
+        # Bo nho tich phan cua sai so vi tri va gioi han chong windup.
         self.integral_x = 0.0
         self.integral_y = 0.0
         self.integral_limit = float(integral_limit)
 
+        # Gioi han lenh gia toc va goc nghieng sinh ra tu position controller.
         self.accel_limit = float(accel_limit)
         self.angle_limit = math.radians(angle_limit_deg)
         self.gravity = float(gravity)
 
+    ########## SET POSITION TARGET ##########
+    # Cap nhat target x/y neu co gia tri moi va reset tich phan cua bo giu vi tri.
     def set_target(self, x_target=None, y_target=None):
         if x_target is not None:
             self.x_target = float(x_target)
@@ -53,6 +64,8 @@ class PositionHoldPID:
 
         self.reset_integral()
 
+    ########## SET POSITION PID PARAMS ##########
+    # Cap nhat rieng tung he so PID cho truc x va y; tham so None se duoc bo qua.
     def set_pid(
         self,
         kp_x=None,
@@ -78,10 +91,15 @@ class PositionHoldPID:
 
         self.reset_integral()
 
+    ########## RESET POSITION INTEGRAL ##########
+    # Xoa thanh phan tich phan x/y de controller khong bi lech boi sai so cu.
     def reset_integral(self):
         self.integral_x = 0.0
         self.integral_y = 0.0
 
+    ########## COMPUTE POSITION ATTITUDE TARGET ##########
+    # Tu sai so vi tri/van toc XY, tinh gia toc mong muon roi doi sang roll/pitch
+    # target theo yaw hien tai cua drone.
     def compute_attitude_target(self, x, y, vx, vy, yaw, dt):
         error_x = self.x_target - x
         error_y = self.y_target - y
@@ -138,6 +156,9 @@ class PositionHoldPID:
             "ay_cmd": ay_cmd,
         }
 
+    ########## LIMIT POSITION ACCELERATION ##########
+    # Neu vector gia toc XY vuot gioi han, scale ca hai truc de giu dung huong
+    # nhung khong qua accel_limit.
     def _limit_accel(self, ax_cmd, ay_cmd):
         accel_mag = math.sqrt(ax_cmd * ax_cmd + ay_cmd * ay_cmd)
 

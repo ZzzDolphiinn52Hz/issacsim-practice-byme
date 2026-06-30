@@ -4,6 +4,9 @@ from f450_controller.control_utils import PWM_MAX, PWM_MIN, clamp
 
 
 class AttitudeHoldCompatibilityMixin:
+    ########## POSITION HOLD ENABLE/TARGET COMPATIBILITY ##########
+    # Cac property ben duoi giu ten bien cu, nhung doc/ghi truc tiep vao
+    # position_controller de code ben ngoai van dung duoc API cu.
     @property
     def enable_position_hold(self):
         return self.position_controller.enabled
@@ -48,6 +51,9 @@ class AttitudeHoldCompatibilityMixin:
     def vy_target(self, value):
         self.position_controller.vy_target = float(value)
 
+    ########## YAW HOLD COMPATIBILITY ##########
+    # Nhom property nay anh xa target, trang thai bat/tat va he so PID yaw vao
+    # yaw_controller.
     @property
     def yaw_target(self):
         return self.yaw_controller.yaw_target
@@ -104,6 +110,9 @@ class AttitudeHoldCompatibilityMixin:
     def yaw_pwm_limit(self, value):
         self.yaw_controller.pwm_limit = float(value)
 
+    ########## POSITION PID COMPATIBILITY ##########
+    # Nhom property nay anh xa cac he so PID, tich phan va gioi han cua
+    # position_controller cho cac script cu truy cap truc tiep.
     @property
     def kp_x(self):
         return self.position_controller.kp_x
@@ -192,6 +201,9 @@ class AttitudeHoldCompatibilityMixin:
     def position_angle_limit_deg(self, value):
         self.position_controller.angle_limit = math.radians(float(value))
 
+    ########## ALTITUDE PID COMPATIBILITY ##########
+    # Nhom property nay anh xa target do cao, PWM hover, he so PID z va bo nho
+    # tich phan vao altitude_controller.
     @property
     def z_target(self):
         return self.altitude_controller.z_target
@@ -256,6 +268,9 @@ class AttitudeHoldCompatibilityMixin:
     def integral_limit(self, value):
         self.altitude_controller.integral_limit = float(value)
 
+    ########## ATTITUDE PID COMPATIBILITY ##########
+    # Nhom property nay anh xa target roll/pitch, he so PID va gioi han hieu
+    # chinh vao attitude_controller.
     @property
     def roll_target(self):
         return self.attitude_controller.roll_target
@@ -352,6 +367,9 @@ class AttitudeHoldCompatibilityMixin:
     def attitude_pwm_limit(self, value):
         self.attitude_controller.pwm_limit = float(value)
 
+    ########## PROPELLER SPINNER COMPATIBILITY ##########
+    # Nhom property nay giu API cu cho phan quay canh quat vat ly, tat ca duoc
+    # chuyen vao propeller_spinner.
     @property
     def enable_physical_propeller_spin(self):
         return self.propeller_spinner.enabled
