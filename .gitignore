@@ -5,3 +5,12 @@ __pycache__/
 *.sh
 *.zsh
 *.ps1
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
