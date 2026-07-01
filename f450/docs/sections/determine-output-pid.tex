@@ -1,0 +1,347 @@
+\section{Cách xác định output của một bộ PID}
+
+Một bộ PID không tự quyết định output là gia tốc, lực, moment hay PWM.
+Người thiết kế quyết định output dựa trên câu hỏi: "Tầng sau của PID cần nhận đại lượng gì?"
+
+Có thể viết nguyên tắc này dưới dạng:
+
+\begin{equation}
+    \boxed{
+    \text{Đơn vị output của PID}
+    =
+    \text{Đơn vị input mà tầng sau cần}
+    }
+\end{equation}
+
+Ví dụ, nếu tầng sau cần gia tốc:
+
+\begin{equation}
+    u = a
+\end{equation}
+
+Nếu tầng sau cần lực:
+
+\begin{equation}
+    u = F
+\end{equation}
+
+Nếu tầng sau cần moment:
+
+\begin{equation}
+    u = \tau
+\end{equation}
+
+Nếu tầng sau cần PWM:
+
+\begin{equation}
+    u = PWM
+\end{equation}
+
+\subsection{Output của các tầng PID trong project}
+
+\subsubsection{Position PID}
+
+Tầng Position PID nhận sai số vị trí và biến nó thành lệnh gia tốc/góc nghiêng mong muốn \cite{mahony2012multirotor}:
+
+\begin{equation}
+    e_x,\quad e_y
+\end{equation}
+
+và tạo gia tốc ngang mong muốn:
+
+\begin{equation}
+    a_x,\quad a_y
+\end{equation}
+
+Sau đó đổi thành góc nghiêng mong muốn:
+
+\begin{equation}
+    a_x,\ a_y
+    \longrightarrow
+    \phi_d,\ \theta_d
+\end{equation}
+
+Vì vậy:
+
+\begin{equation}
+    \boxed{
+    PositionPID
+    \longrightarrow
+    roll\_target,\ pitch\_target
+    }
+\end{equation}
+
+\subsubsection{Altitude PID}
+
+Tầng Altitude PID điều khiển độ cao $z$.
+
+Sai số độ cao:
+
+\begin{equation}
+    e_z = z_d - z
+\end{equation}
+
+Sai số vận tốc đứng:
+
+\begin{equation}
+    e_{v_z} = v_{zd} - v_z
+\end{equation}
+
+Trong project, output của tầng này là PWM nền:
+
+\begin{equation}
+    PWM_{base}
+    =
+    PWM_{hover}
+    +
+    K_{p_z}e_z
+    +
+    K_{d_z}e_{v_z}
+    +
+    K_{i_z}\int e_z\,dt
+\end{equation}
+
+Vì vậy:
+
+\begin{equation}
+    \boxed{
+    AltitudePID
+    \longrightarrow
+    PWM_{base}
+    }
+\end{equation}
+
+\subsubsection{Attitude PID}
+
+Tầng Attitude PID nhận góc mong muốn:
+
+\begin{equation}
+    \phi_d,\quad \theta_d
+\end{equation}
+
+và góc hiện tại:
+
+\begin{equation}
+    \phi,\quad \theta
+\end{equation}
+
+Sai số roll:
+
+\begin{equation}
+    e_\phi = \phi_d - \phi
+\end{equation}
+
+Sai số pitch:
+
+\begin{equation}
+    e_\theta = \theta_d - \theta
+\end{equation}
+
+Trong project, output của tầng này là PWM correction:
+
+\begin{equation}
+    \Delta PWM_\phi
+    =
+    K_{p_\phi}e_\phi
+    +
+    K_{i_\phi}\int e_\phi\,dt
+    -
+    K_{d_\phi}p
+\end{equation}
+
+\begin{equation}
+    \Delta PWM_\theta
+    =
+    K_{p_\theta}e_\theta
+    +
+    K_{i_\theta}\int e_\theta\,dt
+    -
+    K_{d_\theta}q
+\end{equation}
+
+Trong đó:
+
+\begin{equation}
+    p = \dot{\phi}
+\end{equation}
+
+\begin{equation}
+    q = \dot{\theta}
+\end{equation}
+
+Vì vậy:
+
+\begin{equation}
+    \boxed{
+    AttitudePID
+    \longrightarrow
+    \Delta PWM_\phi,\ \Delta PWM_\theta
+    }
+\end{equation}
+
+\subsubsection{Yaw PID}
+
+Sai số yaw:
+
+\begin{equation}
+    e_\psi = wrap(\psi_d - \psi)
+\end{equation}
+
+Output của yaw PID là PWM correction theo yaw:
+
+\begin{equation}
+    \Delta PWM_\psi
+    =
+    K_{p_\psi}e_\psi
+    +
+    K_{i_\psi}\int e_\psi\,dt
+    -
+    K_{d_\psi}r
+\end{equation}
+
+Trong đó:
+
+\begin{equation}
+    r = \dot{\psi}
+\end{equation}
+
+Vì vậy:
+
+\begin{equation}
+    \boxed{
+    YawPID
+    \longrightarrow
+    \Delta PWM_\psi
+    }
+\end{equation}
+
+\subsection{Mixer}
+
+Mixer nhận các đại lượng:
+
+\begin{equation}
+    PWM_{base},\quad
+    \Delta PWM_\phi,\quad
+    \Delta PWM_\theta,\quad
+    \Delta PWM_\psi
+\end{equation}
+
+và tạo PWM cho từng motor:
+
+\begin{equation}
+    PWM_1
+    =
+    PWM_{base}
+    +
+    \Delta PWM_\phi
+    -
+    \Delta PWM_\theta
+    -
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_2
+    =
+    PWM_{base}
+    -
+    \Delta PWM_\phi
+    -
+    \Delta PWM_\theta
+    +
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_3
+    =
+    PWM_{base}
+    -
+    \Delta PWM_\phi
+    +
+    \Delta PWM_\theta
+    -
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_4
+    =
+    PWM_{base}
+    +
+    \Delta PWM_\phi
+    +
+    \Delta PWM_\theta
+    +
+    \Delta PWM_\psi
+\end{equation}
+
+Vì vậy:
+
+\begin{equation}
+    \boxed{
+    Mixer
+    \longrightarrow
+    PWM_1,\ PWM_2,\ PWM_3,\ PWM_4
+    }
+\end{equation}
+
+\subsection{Tóm tắt nguyên tắc chọn output PID}
+
+Nguyên tắc chung:
+
+\begin{equation}
+    \boxed{
+    \text{PID output phụ thuộc vào tầng sau cần gì}
+    }
+\end{equation}
+
+Trong project hiện tại:
+
+\begin{equation}
+    PositionPID
+    \longrightarrow
+    a_x,\ a_y
+    \longrightarrow
+    \phi_d,\ \theta_d
+\end{equation}
+
+\begin{equation}
+    AltitudePID
+    \longrightarrow
+    PWM_{base}
+\end{equation}
+
+\begin{equation}
+    AttitudePID
+    \longrightarrow
+    \Delta PWM_\phi,\ \Delta PWM_\theta
+\end{equation}
+
+\begin{equation}
+    YawPID
+    \longrightarrow
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    Mixer
+    \longrightarrow
+    PWM_1,\ PWM_2,\ PWM_3,\ PWM_4
+\end{equation}
+
+\begin{equation}
+    MotorModel
+    \longrightarrow
+    T_1,\ T_2,\ T_3,\ T_4
+\end{equation}
+
+Do đó, trong project này:
+\begin{itemize}
+    \item Position PID tạo gia tốc rồi đổi thành góc nghiêng mong muốn.
+    \item Altitude PID tạo PWM nền.
+    \item Attitude PID tạo PWM hiệu chỉnh roll/pitch.
+    \item Yaw PID tạo PWM hiệu chỉnh yaw.
+    \item Mixer tạo PWM cho từng motor.
+    \item Motor model biến PWM thành lực nâng.
+\end{itemize}

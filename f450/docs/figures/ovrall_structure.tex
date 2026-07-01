@@ -1,0 +1,65 @@
+\begin{figure}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    block/.style={
+        rectangle,
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=2.8cm,
+        minimum height=1.0cm
+    },
+    arrow/.style={
+        -{Latex},
+        thick
+    },
+    node distance=1.4cm
+]
+
+% Main horizontal chain
+\node[block] (traj) {Trajectory\\Generator};
+
+\node[block, right=of traj] (pos)
+{Position PID\\$x,y \rightarrow \phi_d,\theta_d$};
+
+\node[block, right=of pos] (att)
+{Attitude PID\\$\phi,\theta \rightarrow \Delta PWM$};
+
+\node[block, right=of att] (mix)
+{Mixer\\$PWM_1,\ldots,PWM_4$};
+
+\node[block, right=of mix] (motor)
+{Motor Model\\$PWM \rightarrow T$};
+
+\node[block, right=of motor] (drone)
+{Drone Physics\\Isaac Sim};
+
+% Upper control blocks
+\node[block, above left=1.2cm and 0.2cm of mix] (yaw)
+{Yaw PID\\$\psi \rightarrow \Delta PWM_\psi$};
+
+\node[block, above right=1.2cm and 0.2cm of mix] (alt)
+{Altitude PID\\$z \rightarrow PWM_{base}$};
+
+% Main arrows
+\draw[arrow] (traj) -- (pos);
+\draw[arrow] (pos) -- (att);
+\draw[arrow] (att) -- (mix);
+\draw[arrow] (mix) -- (motor);
+\draw[arrow] (motor) -- (drone);
+
+% Yaw and altitude arrows to mixer
+\draw[arrow] (yaw) -- (mix);
+\draw[arrow] (alt) -- (mix);
+
+% Feedback line
+\draw[arrow]
+    (drone.south) |- ++(0,-1.0) -| (pos.south)
+    node[pos=0.25, below] {state feedback};
+
+\end{tikzpicture}
+}
+\caption{Cascade PID control structure}
+\label{fig:cascade_pid}
+\end{figure}

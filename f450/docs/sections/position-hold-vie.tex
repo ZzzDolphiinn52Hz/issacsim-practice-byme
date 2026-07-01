@@ -1,0 +1,670 @@
+\section{Position Hold PID}
+
+\input{figures/position-hold}
+
+\subsection{Công thức PID chuẩn}
+
+Công thức PID tổng quát có dạng \cite{astrom1995pid}:
+
+\begin{equation}
+    u(t) = K_p e(t) + K_i \int e(t)\,dt + K_d \dot{e}(t)
+\end{equation}
+
+trong đó:
+
+\begin{equation}
+    e(t) = r(t) - y(t)
+\end{equation}
+
+Với:
+\begin{itemize}
+    \item $r(t)$: giá trị mong muốn,
+    \item $y(t)$: giá trị đo được,
+    \item $e(t)$: sai số,
+    \item $u(t)$: output điều khiển,
+    \item $K_p, K_i, K_d$: hệ số tỉ lệ, tích phân và vi phân.
+\end{itemize}
+
+Trong bộ điều khiển drone, output $u(t)$ không nhất thiết là PWM.
+Tùy tầng điều khiển, $u(t)$ có thể là gia tốc, góc mong muốn, moment,
+lực nâng hoặc PWM.
+
+\subsection{Sai số vị trí trong Position Hold}
+
+Gọi vị trí mong muốn của drone trong WORLD-coordination [W] là:
+
+\begin{equation}
+    x_d,\quad y_d
+\end{equation}
+
+Vị trí hiện tại của drone là:
+
+\begin{equation}
+    x,\quad y
+\end{equation}
+
+Sai số vị trí được định nghĩa là:
+
+\begin{equation}
+    e_x = x_d - x
+\end{equation}
+
+\begin{equation}
+    e_y = y_d - y
+\end{equation}
+
+Nếu $e_x > 0$, drone đang nằm phía sau target theo trục $x$ và cần tạo gia tốc
+theo chiều $+x$.
+
+Nếu $e_y > 0$, drone đang lệch so với target theo trục $y$ và cần tạo gia tốc
+theo chiều $+y$.
+
+\subsection{Sai số vận tốc}
+
+Gọi vận tốc mong muốn là:
+
+\begin{equation}
+    v_{xd},\quad v_{yd}
+\end{equation}
+
+Vận tốc hiện tại là:
+
+\begin{equation}
+    v_x,\quad v_y
+\end{equation}
+
+Sai số vận tốc là:
+
+\begin{equation}
+    e_{v_x} = v_{xd} - v_x
+\end{equation}
+
+\begin{equation}
+    e_{v_y} = v_{yd} - v_y
+\end{equation}
+
+Ta có:
+
+\begin{equation}
+    e_x = x_d - x
+\end{equation}
+
+Lấy đạo hàm hai vế theo thời gian:
+
+\begin{equation}
+    \dot{e}_x = \dot{x}_d - \dot{x}
+\end{equation}
+
+Mà:
+
+\begin{equation}
+    \dot{x}_d = v_{xd}
+\end{equation}
+
+\begin{equation}
+    \dot{x} = v_x
+\end{equation}
+
+Do đó:
+
+\begin{equation}
+    \dot{e}_x = v_{xd} - v_x = e_{v_x}
+\end{equation}
+
+Tương tự:
+
+\begin{equation}
+    \dot{e}_y = v_{yd} - v_y = e_{v_y}
+\end{equation}
+
+Vì vậy, thành phần sai số vận tốc $e_{v_x}$ và $e_{v_y}$ chính là thành phần
+vi phân của sai số vị trí.
+
+\subsection{Tích phân sai số}
+
+Thành phần tích phân của sai số vị trí là:
+
+\begin{equation}
+    I_x = \int e_x\,dt
+\end{equation}
+
+\begin{equation}
+    I_y = \int e_y\,dt
+\end{equation}
+
+Trong dạng rời rạc:
+
+\begin{equation}
+    I_x(k) = I_x(k-1) + e_x(k)\Delta t
+\end{equation}
+
+\begin{equation}
+    I_y(k) = I_y(k-1) + e_y(k)\Delta t
+\end{equation}
+
+Để tránh hiện tượng tích phân tăng quá lớn, ta giới hạn:
+
+\begin{equation}
+    -I_{\max} \leq I_x \leq I_{\max}
+\end{equation}
+
+\begin{equation}
+    -I_{\max} \leq I_y \leq I_{\max}
+\end{equation}
+
+Giới hạn này giúp chống hiện tượng \textit{integral windup}.
+
+\subsection{PID vị trí tạo gia tốc mong muốn}
+
+Trong tầng Position Hold, PID không tạo PWM trực tiếp.
+Output của PID vị trí là gia tốc ngang mong muốn:
+
+\begin{equation}
+    a_{x,cmd}
+\end{equation}
+
+\begin{equation}
+    a_{y,cmd}
+\end{equation}
+
+Công thức PID theo trục $x$:
+
+\begin{equation}
+    a_{x,cmd}
+    =
+    K_{p_x} e_x
+    +
+    K_{d_x} e_{v_x}
+    +
+    K_{i_x} I_x
+\end{equation}
+
+Công thức PID theo trục $y$:
+
+\begin{equation}
+    a_{y,cmd}
+    =
+    K_{p_y} e_y
+    +
+    K_{d_y} e_{v_y}
+    +
+    K_{i_y} I_y
+\end{equation}
+
+So với công thức PID chuẩn:
+
+\begin{equation}
+    u = K_p e + K_i \int e\,dt + K_d \dot{e}
+\end{equation}
+
+thì trong tầng Position Hold:
+
+\begin{equation}
+    u_x = a_{x,cmd}
+\end{equation}
+
+\begin{equation}
+    u_y = a_{y,cmd}
+\end{equation}
+
+Tức là output của PID vị trí là gia tốc ngang mong muốn, không phải PWM.
+
+\subsection{Bản chất vật lý của việc chọn gia tốc làm output}
+
+Theo định luật II Newton:
+
+\begin{equation}
+    F = ma
+\end{equation}
+
+Muốn thay đổi vị trí ngang của drone, ta cần tạo gia tốc ngang:
+
+\begin{equation}
+    a_x,\quad a_y
+\end{equation}
+
+Do đó, tầng Position Hold trả lời câu hỏi:
+
+\begin{center}
+    Drone cần gia tốc ngang bao nhiêu để quay về vị trí mong muốn?
+\end{center}
+
+Vì vậy, output hợp lý của tầng Position Hold là:
+
+\begin{equation}
+    a_{x,cmd},\quad a_{y,cmd}
+\end{equation}
+
+Sau đó, các gia tốc này sẽ được chuyển thành góc nghiêng mong muốn.
+
+\subsection{Giới hạn gia tốc ngang}
+
+Vector gia tốc ngang mong muốn là:
+
+\begin{equation}
+    \mathbf{a}_{cmd}
+    =
+    \begin{bmatrix}
+        a_{x,cmd} \\
+        a_{y,cmd}
+    \end{bmatrix}
+\end{equation}
+
+Độ lớn vector gia tốc là:
+
+\begin{equation}
+    \|\mathbf{a}_{cmd}\|
+    =
+    \sqrt{a_{x,cmd}^{2}+a_{y,cmd}^{2}}
+\end{equation}
+
+Project giới hạn gia tốc ngang theo điều kiện:
+
+\begin{equation}
+    \|\mathbf{a}_{cmd}\| \leq a_{\max}
+\end{equation}
+
+Nếu:
+
+\begin{equation}
+    \sqrt{a_{x,cmd}^{2}+a_{y,cmd}^{2}} > a_{\max}
+\end{equation}
+
+thì scale lại:
+
+\begin{equation}
+    a_{x,cmd}^{new}
+    =
+    a_{x,cmd}
+    \frac{a_{\max}}
+    {\sqrt{a_{x,cmd}^{2}+a_{y,cmd}^{2}}}
+\end{equation}
+
+\begin{equation}
+    a_{y,cmd}^{new}
+    =
+    a_{y,cmd}
+    \frac{a_{\max}}
+    {\sqrt{a_{x,cmd}^{2}+a_{y,cmd}^{2}}}
+\end{equation}
+
+Bản chất của bước này là giới hạn độ mạnh của lệnh điều khiển vị trí.
+Nếu gia tốc ngang quá lớn, drone phải nghiêng quá nhiều, dễ gây mất ổn định.
+
+\subsection{Đổi từ [W] sang [B]}
+
+Gia tốc $a_{x,cmd}$ và $a_{y,cmd}$ đang nằm trong [W].
+Tuy nhiên, roll và pitch lại là góc nghiêng theo thân drone.
+
+Gọi yaw hiện tại của drone là:
+
+\begin{equation}
+    \psi
+\end{equation}
+
+Vector gia tốc trong [W] là:
+
+\begin{equation}
+    \mathbf{a}^{W}
+    =
+    \begin{bmatrix}
+        a_x \\
+        a_y
+    \end{bmatrix}
+\end{equation}
+
+Trục forward của drone trong [W] là:
+
+\begin{equation}
+    \mathbf{e}_f
+    =
+    \begin{bmatrix}
+        \cos\psi \\
+        \sin\psi
+    \end{bmatrix}
+\end{equation}
+
+Trục left của drone trong [W] là:
+
+\begin{equation}
+    \mathbf{e}_l
+    =
+    \begin{bmatrix}
+        -\sin\psi \\
+        \cos\psi
+    \end{bmatrix}
+\end{equation}
+
+Gia tốc theo hướng forward của drone là hình chiếu của vector gia tốc world
+lên trục forward:
+
+\begin{equation}
+    a_f
+    =
+    \mathbf{a}^{W} \cdot \mathbf{e}_f
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    a_f
+    =
+    a_x\cos\psi + a_y\sin\psi
+\end{equation}
+
+Gia tốc theo hướng left của drone là:
+
+\begin{equation}
+    a_l
+    =
+    \mathbf{a}^{W} \cdot \mathbf{e}_l
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    a_l
+    =
+    -a_x\sin\psi + a_y\cos\psi
+\end{equation}
+
+Trong đó:
+\begin{itemize}
+    \item $a_f$: gia tốc mong muốn theo hướng tiến/lùi của drone,
+    \item $a_l$: gia tốc mong muốn theo hướng trái/phải của drone.
+\end{itemize}
+
+\subsection{Bản chất vật lý - nghiêng drone để tạo gia tốc ngang}
+
+Quadcopter tạo lực nâng tổng $T$ theo trục thân của nó \cite{bouabdallah2007design}.
+
+Khi drone nằm ngang, lực nâng hướng thẳng lên.
+Ở trạng thái hover:
+
+\begin{equation}
+    T \approx mg
+\end{equation}
+
+Khi drone nghiêng một góc $\alpha$, lực nâng bị nghiêng theo.
+Khi đó lực nâng có thành phần đứng và thành phần ngang:
+
+\begin{equation}
+    T_z = T\cos\alpha
+\end{equation}
+
+\begin{equation}
+    T_h = T\sin\alpha
+\end{equation}
+
+Để giữ độ cao gần như không đổi:
+
+\begin{equation}
+    T\cos\alpha \approx mg
+\end{equation}
+
+Theo phương ngang:
+
+\begin{equation}
+    T\sin\alpha = ma_h
+\end{equation}
+
+Chia hai phương trình:
+
+\begin{equation}
+    \frac{T\sin\alpha}{T\cos\alpha}
+    =
+    \frac{ma_h}{mg}
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    \tan\alpha
+    =
+    \frac{a_h}{g}
+\end{equation}
+
+Do đó:
+
+\begin{equation}
+    \alpha
+    =
+    \arctan\left(\frac{a_h}{g}\right)
+\end{equation}
+
+Đây là công thức vật lý cơ bản để chuyển từ gia tốc ngang mong muốn sang
+góc nghiêng mong muốn.
+
+\subsection{Tính pitch target}
+
+Gọi gia tốc mong muốn theo hướng forward là:
+
+\begin{equation}
+    a_f
+\end{equation}
+
+Góc pitch mong muốn là:
+
+\begin{equation}
+    \theta_d
+\end{equation}
+
+Theo quan hệ vật lý:
+
+\begin{equation}
+    \tan\theta_d
+    =
+    \frac{a_f}{g}
+\end{equation}
+
+Suy ra:
+
+\begin{equation}
+    \theta_d
+    =
+    \arctan\left(\frac{a_f}{g}\right)
+\end{equation}
+
+Trong project, công thức được viết tương đương dưới dạng:
+
+\begin{equation}
+    \theta_d
+    =
+    \operatorname{atan2}(a_f, g)
+\end{equation}
+
+Với góc nhỏ:
+
+\begin{equation}
+    \theta_d \approx \frac{a_f}{g}
+\end{equation}
+
+Trong đó:
+
+\begin{equation}
+    \theta_d = pitch\_target
+\end{equation}
+
+\subsection{Tính roll target}
+
+Gọi gia tốc mong muốn theo hướng left là:
+
+\begin{equation}
+    a_l
+\end{equation}
+
+Góc roll mong muốn là:
+
+\begin{equation}
+    \phi_d
+\end{equation}
+
+Theo quy ước dấu trong project:
+
+\begin{equation}
+    \phi_d
+    =
+    -\operatorname{atan2}(a_l, g)
+\end{equation}
+
+Tương đương:
+
+\begin{equation}
+    \phi_d
+    =
+    -\arctan\left(\frac{a_l}{g}\right)
+\end{equation}
+
+Với góc nhỏ:
+
+\begin{equation}
+    \phi_d \approx -\frac{a_l}{g}
+\end{equation}
+
+Trong đó:
+
+\begin{equation}
+    \phi_d = roll\_target
+\end{equation}
+
+Dấu âm xuất hiện do quy ước trục roll trong mô hình.
+Nếu sau này drone bay ngược hướng trái/phải, đây là một dấu cần kiểm tra.
+
+\subsection{Giới hạn góc nghiêng}
+
+Sau khi tính được $\phi_d$ và $\theta_d$, project giới hạn:
+
+\begin{equation}
+    -\alpha_{\max}
+    \leq
+    \phi_d
+    \leq
+    \alpha_{\max}
+\end{equation}
+
+\begin{equation}
+    -\alpha_{\max}
+    \leq
+    \theta_d
+    \leq
+    \alpha_{\max}
+\end{equation}
+
+Nếu:
+
+\begin{equation}
+    \alpha_{\max} = 6.5^\circ
+\end{equation}
+
+thì gia tốc ngang tối đa tương ứng xấp xỉ là:
+
+\begin{equation}
+    a_{\max}
+    =
+    g\tan(\alpha_{\max})
+\end{equation}
+
+Thay số:
+
+\begin{equation}
+    a_{\max}
+    =
+    9.81\tan(6.5^\circ)
+\end{equation}
+
+\begin{equation}
+    a_{\max}
+    \approx
+    1.12\ \mathrm{m/s^2}
+\end{equation}
+
+Điều này cho thấy giới hạn góc nghiêng và giới hạn gia tốc ngang có liên hệ
+trực tiếp với nhau.
+
+\subsection{Công thức tổng hợp của Position Hold PID}
+
+Toàn bộ tầng Position Hold có thể viết tóm tắt như sau.
+
+Sai số vị trí:
+
+\begin{equation}
+    e_x = x_d - x
+\end{equation}
+
+\begin{equation}
+    e_y = y_d - y
+\end{equation}
+
+Sai số vận tốc:
+
+\begin{equation}
+    e_{v_x} = v_{xd} - v_x
+\end{equation}
+
+\begin{equation}
+    e_{v_y} = v_{yd} - v_y
+\end{equation}
+
+Tích phân sai số:
+
+\begin{equation}
+    I_x = \int e_x\,dt
+\end{equation}
+
+\begin{equation}
+    I_y = \int e_y\,dt
+\end{equation}
+
+PID tạo gia tốc ngang mong muốn:
+
+\begin{equation}
+    a_x
+    =
+    K_{p_x}e_x
+    +
+    K_{d_x}e_{v_x}
+    +
+    K_{i_x}I_x
+\end{equation}
+
+\begin{equation}
+    a_y
+    =
+    K_{p_y}e_y
+    +
+    K_{d_y}e_{v_y}
+    +
+    K_{i_y}I_y
+\end{equation}
+
+Đổi sang hệ trục của drone:
+
+\begin{equation}
+    a_f
+    =
+    a_x\cos\psi + a_y\sin\psi
+\end{equation}
+
+\begin{equation}
+    a_l
+    =
+    -a_x\sin\psi + a_y\cos\psi
+\end{equation}
+
+Đổi gia tốc thành góc nghiêng:
+
+\begin{equation}
+    \theta_d
+    =
+    \operatorname{atan2}(a_f, g)
+\end{equation}
+
+\begin{equation}
+    \phi_d
+    =
+    -\operatorname{atan2}(a_l, g)
+\end{equation}
+
+\vspace{0.5cm}
+\hrule
+

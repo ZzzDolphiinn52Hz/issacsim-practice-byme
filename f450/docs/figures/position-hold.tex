@@ -1,0 +1,41 @@
+\begin{figure}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    block/.style={
+        rectangle,
+        draw,
+        rounded corners,
+        align=center,
+        minimum width=5cm,
+        minimum height=1.2cm
+    },
+    arrow/.style={
+        -{Latex},
+        thick
+    },
+    node distance=4cm
+]
+
+\node (input)
+{};
+
+\node[block, right=of input] (pos)
+{Position PID};
+
+\node[right=of pos] (output)
+{};
+
+\draw[arrow] (input) --
+node[midway, above] {$x_d,y_d$}
+node[midway, below] {$x,y,v_x,v_y,\psi$}
+(pos);
+
+\draw[arrow] (pos) -- node[midway, above]
+{$\phi_d,\theta_d$} (output);
+
+\end{tikzpicture}
+}
+\caption{Position PID control law}
+\label{fig:position_pid}
+\end{figure}
