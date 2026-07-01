@@ -1,17 +1,17 @@
 # Fdb version 4
-["bibtex Baocao"] 1782867501.61377 "Baocao.aux" "Baocao.bbl" "Baocao" 1782867504.67162 0
-  "./references.bib" 1782867500 763 b65d15cd17d6839b12f8f94cf8f5117e ""
-  "Baocao.aux" 1782867503 11683 305f66022a4a6dd3a6827cef03f7fe51 "pdflatex"
+["bibtex Baocao"] 1782867880.12833 "Baocao.aux" "Baocao.bbl" "Baocao" 1782867883.44226 0
+  "./references.bib" 1782867874 763 b65d15cd17d6839b12f8f94cf8f5117e ""
+  "Baocao.aux" 1782867882 11683 305f66022a4a6dd3a6827cef03f7fe51 "pdflatex"
   "C:/Users/PC/AppData/Local/Programs/MiKTeX/bibtex/bst/ieeetran/IEEEtran.bst" 1440622569 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
   (generated)
   "Baocao.bbl"
   "Baocao.blg"
   (rewritten before read)
-["pdflatex"] 1782867502.10669 "f:/TuanAnhStudy/isaacsim-drone/issacsim-practice-byme/f450/docs/Baocao.tex" "Baocao.pdf" "Baocao" 1782867504.67252 0
-  "Baocao.aux" 1782867503 11683 305f66022a4a6dd3a6827cef03f7fe51 "pdflatex"
-  "Baocao.bbl" 1782867501 1531 f8ea298a9cba0e428de318df7ede7f33 "bibtex Baocao"
-  "Baocao.tex" 1782867412 759 eff54d7debc567335ac11a47f99a8ab8 ""
-  "Baocao.toc" 1782867503 2119 36d4910d601a3edf54adc48888c57a7f "pdflatex"
+["pdflatex"] 1782867880.57193 "f:/TuanAnhStudy/isaacsim-drone/issacsim-practice-byme/f450/docs/Baocao.tex" "Baocao.pdf" "Baocao" 1782867883.44344 0
+  "Baocao.aux" 1782867882 11683 305f66022a4a6dd3a6827cef03f7fe51 "pdflatex"
+  "Baocao.bbl" 1782867880 1531 f8ea298a9cba0e428de318df7ede7f33 "bibtex Baocao"
+  "Baocao.tex" 1782867874 795 eff54d7debc567335ac11a47f99a8ab8 ""
+  "Baocao.toc" 1782867882 2119 36d4910d601a3edf54adc48888c57a7f "pdflatex"
   "C:/Users/PC/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1782866712 88371 b965f57369ed322039596060d18f4416 ""
   "C:/Users/PC/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1200.pk" 1781248742 14064 1b32b67b1f02a2547b841f4c14fce721 ""
   "C:/Users/PC/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1781248690 13365638 1fd5af283b6544949a733883e8799264 ""
@@ -177,10 +177,10 @@
   "C:/Users/PC/AppData/Local/Programs/MiKTeX/tex/latex/vntex/t5enc.def" 1368738347 21986 ccb3b8f7cc27fbd61b3daabbbb82ad3f ""
   "C:/Users/PC/AppData/Local/Programs/MiKTeX/tex/latex/vntex/t5enc.dfu" 1368738347 13949 387dd4fa58aea5f873839c93430fffed ""
   "C:/Users/PC/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "f:/TuanAnhStudy/isaacsim-drone/issacsim-practice-byme/f450/docs/Baocao.tex" 1782867412 759 eff54d7debc567335ac11a47f99a8ab8 ""
-  "figures/position-hold.tex" 1782867163 698 2e299470713aedae6bdc77a1b8bacbba ""
-  "sections/determine-output-pid.tex" 1782867500 5566 ad500bd251545f09490ecf6e97c6cd26 ""
-  "sections/position-hold-vie.tex" 1782867500 11854 eeec9be7401805e549983f4b98cc8f77 ""
+  "f:/TuanAnhStudy/isaacsim-drone/issacsim-practice-byme/f450/docs/Baocao.tex" 1782867874 795 eff54d7debc567335ac11a47f99a8ab8 ""
+  "figures/position-hold.tex" 1782867874 739 2e299470713aedae6bdc77a1b8bacbba ""
+  "sections/determine-output-pid.tex" 1782867874 5913 ad500bd251545f09490ecf6e97c6cd26 ""
+  "sections/position-hold-vie.tex" 1782867874 12524 eeec9be7401805e549983f4b98cc8f77 ""
   (generated)
   "Baocao.aux"
   "Baocao.log"
