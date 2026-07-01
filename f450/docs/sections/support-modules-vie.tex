@@ -1,0 +1,162 @@
+\section{Propeller Spinner}
+
+File \texttt{propeller\_spinner.py} không phải là PID controller, nhưng giúp
+cánh quạt trong Isaac Sim quay theo RPM của motor model. Module này dùng
+\texttt{dynamic\_control} để tìm các DOF:
+
+\begin{equation}
+    propeller\_1\_joint,\quad
+    propeller\_2\_joint,\quad
+    propeller\_3\_joint,\quad
+    propeller\_4\_joint
+\end{equation}
+
+Nếu tìm được DOF, code cấu hình velocity drive và đặt target velocity cho từng
+cánh quạt.
+
+\subsection{Đổi RPM sang vận tốc joint}
+
+Với motor thứ $i$, RPM từ motor model được đổi sang rad/s:
+
+\begin{equation}
+    \omega_i
+    =
+    RPM_i
+    \frac{2\pi}{60}
+\end{equation}
+
+Lệnh vận tốc joint:
+
+\begin{equation}
+    \omega_{cmd,i}
+    =
+    d_i
+    s
+    \omega_i
+\end{equation}
+
+Trong đó:
+
+\begin{itemize}
+    \item $d_i$ là chiều quay motor, mặc định $[1,-1,1,-1]$.
+    \item $s$ là hệ số hiển thị, mặc định $0.7$.
+\end{itemize}
+
+Việc nhân với $s$ giúp tốc độ quay hiển thị không quá cực đoan so với mô phỏng.
+Phần này chủ yếu phục vụ trực quan, không phải nguồn lực chính tác động lên
+drone. Lực chính vẫn đến từ \texttt{MotorModel} và
+\texttt{apply\_body\_force}.
+
+\section{Tracking Logger}
+
+File \texttt{tracking\_logger.py} ghi log trạng thái drone và target ra CSV.
+Logger được bật bằng:
+
+\begin{equation}
+    start\_tracking\_log(csv\_path,\ sample\_period)
+\end{equation}
+
+Mặc định:
+
+\begin{equation}
+    sample\_period = 0.02\ \mathrm{s}
+\end{equation}
+
+Tức là tần số ghi log tối đa khoảng:
+
+\begin{equation}
+    50\ \mathrm{Hz}
+\end{equation}
+
+\subsection{Các đại lượng được ghi}
+
+CSV log gồm các nhóm dữ liệu:
+
+\begin{itemize}
+    \item Thời gian mô phỏng: \texttt{time}.
+    \item Vị trí và target: $x,x_d,y,y_d,z,z_d$.
+    \item Roll, pitch, yaw theo độ.
+    \item Roll, pitch, yaw target theo độ.
+    \item Roll, pitch, yaw theo radian.
+    \item Roll, pitch, yaw target theo radian.
+\end{itemize}
+
+Các dữ liệu này đủ để vẽ đồ thị tracking, kiểm tra overshoot, kiểm tra sai số
+xác lập và so sánh target với trạng thái thật.
+
+\section{Compatibility Mixin}
+
+File \texttt{attitude\_hold\_compat.py} chứa
+\texttt{AttitudeHoldCompatibilityMixin}. Module này không tạo luật điều khiển
+mới. Vai trò của nó là giữ lại API cũ sau khi code được tách thành nhiều
+controller nhỏ.
+
+Ví dụ, khi code bên ngoài truy cập:
+
+\begin{equation}
+    kp\_x
+\end{equation}
+
+thì property trong mixin thực chất đọc:
+
+\begin{equation}
+    position\_controller.kp\_x
+\end{equation}
+
+Tương tự:
+
+\begin{equation}
+    z\_target
+    \leftrightarrow
+    altitude\_controller.z\_target
+\end{equation}
+
+\begin{equation}
+    yaw\_target
+    \leftrightarrow
+    yaw\_controller.yaw\_target
+\end{equation}
+
+\begin{equation}
+    roll\_target,\ pitch\_target
+    \leftrightarrow
+    attitude\_controller
+\end{equation}
+
+Cách làm này giúp những script cũ vẫn chạy được, đồng thời code mới vẫn có cấu
+trúc rõ ràng hơn.
+
+\section{Tóm tắt toàn bộ hệ thống}
+
+Toàn bộ controller có thể tóm tắt bằng chuỗi biến đổi:
+
+\begin{equation}
+    (x_d,y_d,z_d,\psi_d)
+    -
+    (x,y,z,\psi)
+    \longrightarrow
+    PID
+    \longrightarrow
+    PWM_i
+    \longrightarrow
+    T_i,Q_i
+    \longrightarrow
+    \text{Isaac Sim physics}
+\end{equation}
+
+Trong đó:
+
+\begin{itemize}
+    \item Position PID biến sai số $x,y$ thành góc nghiêng mong muốn.
+    \item Altitude PID biến sai số $z$ thành PWM nền.
+    \item Attitude PID biến sai số roll/pitch thành PWM correction.
+    \item Yaw PID biến sai số yaw thành PWM correction.
+    \item Mixer tạo PWM cho từng motor theo cấu hình quad X.
+    \item Motor model biến PWM thành lực đẩy và torque phản lực.
+    \item Isaac Sim nhận lực vật lý và cập nhật trạng thái drone.
+\end{itemize}
+
+Điểm quan trọng nhất là mỗi PID chỉ tạo output mà tầng sau cần. Nhờ vậy hệ điều
+khiển dễ đọc, dễ chỉnh tham số và dễ debug: khi drone lỗi độ cao thì kiểm tra
+altitude PID; khi nghiêng sai thì kiểm tra attitude PID/mixer; khi trôi vị trí
+ngang thì kiểm tra position PID và quy ước dấu roll/pitch.

@@ -1,0 +1,338 @@
+\section{Altitude Hold PID}
+
+Tầng altitude điều khiển độ cao $z$ của drone. Khác với Position PID, tầng này
+không tạo góc nghiêng mà tạo PWM base cho cả bốn motor.
+
+\subsection{Sai số độ cao và vận tốc đứng}
+
+Gọi độ cao mong muốn là:
+
+\begin{equation}
+    z_d
+\end{equation}
+
+Độ cao hiện tại là:
+
+\begin{equation}
+    z
+\end{equation}
+
+Sai số độ cao:
+
+\begin{equation}
+    e_z = z_d - z
+\end{equation}
+
+Gọi vận tốc đứng mong muốn là $v_{zd}$ và vận tốc đứng hiện tại là $v_z$.
+Sai số vận tốc đứng:
+
+\begin{equation}
+    e_{v_z} = v_{zd} - v_z
+\end{equation}
+
+Trong project, $v_{zd}$ mặc định bằng $0$, nghĩa là khi giữ độ cao thì drone
+không mong muốn tiếp tục đi lên hoặc đi xuống.
+
+\subsection{Tích phân độ cao}
+
+Thành phần tích phân của sai số độ cao:
+
+\begin{equation}
+    I_z(k) = I_z(k-1) + e_z(k)\Delta t
+\end{equation}
+
+Project giới hạn:
+
+\begin{equation}
+    -I_{z,max} \leq I_z \leq I_{z,max}
+\end{equation}
+
+Trong code:
+
+\begin{equation}
+    I_{z,max}=12.0
+\end{equation}
+
+Giới hạn này giúp tránh integral windup khi drone ở xa target hoặc khi PWM đã
+bị kẹp ở biên.
+
+\subsection{Output của Altitude PID}
+
+Altitude PID tạo ra lượng thay đổi PWM:
+
+\begin{equation}
+    \Delta PWM_z
+    =
+    K_{p_z}e_z
+    +
+    K_{d_z}e_{v_z}
+    +
+    K_{i_z}I_z
+\end{equation}
+
+Base PWM được tính bằng:
+
+\begin{equation}
+    PWM_{base}
+    =
+    PWM_{hover}
+    +
+    \Delta PWM_z
+\end{equation}
+
+Sau đó được giới hạn trong khoảng:
+
+\begin{equation}
+    PWM_{min}
+    \leq
+    PWM_{base}
+    \leq
+    PWM_{max}
+\end{equation}
+
+Với:
+
+\begin{equation}
+    PWM_{min}=1100,\quad PWM_{max}=1940
+\end{equation}
+
+Do đó công thức đầy đủ trong code là:
+
+\begin{equation}
+    PWM_{base}
+    =
+    clamp(
+    PWM_{hover}
+    +
+    K_{p_z}e_z
+    +
+    K_{d_z}e_{v_z}
+    +
+    K_{i_z}I_z,
+    1100,
+    1940
+    )
+\end{equation}
+
+\subsection{Ý nghĩa vật lý}
+
+$PWM_{base}$ là mức ga chung cho bốn motor. Nếu drone thấp hơn target thì
+$e_z>0$, khi đó $\Delta PWM_z$ tăng và tổng lực nâng tăng. Nếu drone cao hơn
+target thì $e_z<0$, PWM nền giảm để drone hạ xuống.
+
+Tầng altitude chỉ lo tổng lực nâng, còn việc phân bố lực giữa các motor để giữ
+roll, pitch, yaw sẽ do mixer xử lý.
+
+\section{Attitude Hold PID}
+
+Tầng attitude giữ roll và pitch của drone. Input của tầng này là góc mong muốn
+từ position controller:
+
+\begin{equation}
+    \phi_d,\quad \theta_d
+\end{equation}
+
+và góc hiện tại:
+
+\begin{equation}
+    \phi,\quad \theta
+\end{equation}
+
+Trong đó $\phi$ là roll và $\theta$ là pitch.
+
+\subsection{Sai số roll/pitch}
+
+Sai số roll:
+
+\begin{equation}
+    e_\phi = wrap(\phi_d - \phi)
+\end{equation}
+
+Sai số pitch:
+
+\begin{equation}
+    e_\theta = wrap(\theta_d - \theta)
+\end{equation}
+
+Hàm $wrap$ giữ sai số góc trong khoảng $[-\pi,\pi]$.
+
+\subsection{Thành phần vi phân dùng vận tốc góc}
+
+Trong code, thành phần D của attitude PID không tính bằng:
+
+\begin{equation}
+    \frac{d e_\phi}{dt},\quad \frac{d e_\theta}{dt}
+\end{equation}
+
+mà dùng trực tiếp vận tốc góc body:
+
+\begin{equation}
+    p = \dot{\phi},\quad q = \dot{\theta}
+\end{equation}
+
+Nếu dùng PID chuẩn, thành phần D là:
+
+\begin{equation}
+    K_{d_\phi}\frac{d e_\phi}{dt}
+    =
+    K_{d_\phi}\left(\frac{d \phi_d}{dt} - \frac{d \phi}{dt}\right)
+    =
+    K_{d_\phi}(\dot{\phi}_d - \dot{\phi})
+\end{equation}
+
+Nếu roll target thay đổi chậm: $\dot{\phi}_d \approx 0$ và $p \approx \dot{\phi}$
+
+
+Vì vậy:
+
+\begin{equation}
+    K_{d_\phi}\frac{d e_\phi}{dt}
+    \approx
+    -K_{d_\phi}\dot{\phi}_d
+    =
+    -K_{d_\phi}p
+\end{equation}
+
+Tương tự với pitch, đó là lí do công thức có dấu trừ:
+
+\begin{equation}
+    \Delta PWM_\phi
+    =
+    K_{p_\phi}e_\phi
+    +
+    K_{i_\phi}I_\phi
+    -
+    K_{d_\phi}p
+\end{equation}
+
+\begin{equation}
+    \Delta PWM_\theta
+    =
+    K_{p_\theta}e_\theta
+    +
+    K_{i_\theta}I_\theta
+    -
+    K_{d_\theta}q
+\end{equation}
+
+Khi drone đang quay nhanh theo một chiều, thành phần $-K_d p$ hoặc $-K_d q$
+tạo lực hãm để giảm dao động.
+
+\subsection{Tích phân và giới hạn output}
+
+Tích phân roll/pitch:
+
+\begin{equation}
+    I_\phi(k)=I_\phi(k-1)+e_\phi(k)\Delta t
+\end{equation}
+
+\begin{equation}
+    I_\theta(k)=I_\theta(k-1)+e_\theta(k)\Delta t
+\end{equation}
+
+Trong code:
+
+\begin{equation}
+    -1.0 \leq I_\phi,I_\theta \leq 1.0
+\end{equation}
+
+Output PWM correction cũng được kẹp:
+
+\begin{equation}
+    -260
+    \leq
+    \Delta PWM_\phi,\Delta PWM_\theta
+    \leq
+    260
+\end{equation}
+
+Các giới hạn này làm cho attitude controller không thể yêu cầu mixer tạo ra
+lệnh quá mạnh so với khả năng motor.
+
+\section{Yaw Hold PID}
+
+Yaw controller giữ hướng $\psi$ của drone. Trong project, yaw controller có thể
+bật/tắt bằng biến \texttt{enabled}.
+
+\subsection{Sai số yaw}
+
+Yaw target:
+
+\begin{equation}
+    \psi_d
+\end{equation}
+
+Yaw hiện tại:
+
+\begin{equation}
+    \psi
+\end{equation}
+
+Sai số yaw:
+
+\begin{equation}
+    e_\psi = wrap(\psi_d-\psi)
+\end{equation}
+
+Việc wrap góc đặc biệt quan trọng với yaw vì yaw có thể đi qua biên
+$-\pi$ và $\pi$.
+
+\subsection{Công thức yaw correction}
+
+Gọi yaw rate là:
+
+\begin{equation}
+    r = \dot{\psi}
+\end{equation}
+
+Tích phân yaw:
+
+\begin{equation}
+    I_\psi(k)=I_\psi(k-1)+e_\psi(k)\Delta t
+\end{equation}
+
+Output của yaw PID là PWM correction:
+
+\begin{equation}
+    \Delta PWM_\psi
+    =
+    K_{p_\psi}e_\psi
+    +
+    K_{i_\psi}I_\psi
+    -
+    K_{d_\psi}r
+\end{equation}
+
+Trong code, output này không phải torque trực tiếp. Nó là lượng PWM sẽ được
+mixer cộng/trừ lên các motor để tạo chênh lệch torque phản lực.
+
+Giới hạn tích phân:
+
+\begin{equation}
+    -0.8 \leq I_\psi \leq 0.8
+\end{equation}
+
+Giới hạn output:
+
+\begin{equation}
+    -120
+    \leq
+    \Delta PWM_\psi
+    \leq
+    120
+\end{equation}
+
+\subsection{Vai trò của yaw correction trong quadcopter}
+
+Roll và pitch được tạo chủ yếu bằng chênh lệch lực nâng giữa các motor. Yaw
+được tạo bằng chênh lệch torque phản lực của các cánh quạt quay ngược chiều
+nhau. Vì vậy mixer sẽ cộng $\Delta PWM_\psi$ vào nhóm motor này và trừ khỏi
+nhóm motor kia.
+
+Nếu yaw hold tắt, project đặt:
+
+\begin{equation}
+    \Delta PWM_\psi = 0
+\end{equation}
+
+Khi đó mixer chỉ còn giữ độ cao, roll và pitch.

@@ -28,8 +28,8 @@ class F450AttitudeHold(AttitudeHoldCompatibilityMixin):
         base_link_path="/f450_simple/base_link",
         x_target=None,
         y_target=None,
-        z_target=3.0,
-        pwm_hover=1307.0,
+        z_target=1.50,
+        pwm_hover=1650.0,
         arm_xy=0.159,
         motor_z=0.04,
     ):

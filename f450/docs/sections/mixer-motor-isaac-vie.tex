@@ -1,0 +1,333 @@
+\section{Quad X PWM Mixer}
+
+Mixer là tầng nhận các lệnh PWM trừu tượng và tạo PWM cụ thể cho từng motor.
+Cấu hình của drone là quad X với thứ tự motor:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Motor & Vị trí trên frame & Tọa độ tương đối \\
+\hline
+1 & front-left & $(+arm,\ +arm,\ z_m)$ \\
+\hline
+2 & front-right & $(+arm,\ -arm,\ z_m)$ \\
+\hline
+3 & rear-right & $(-arm,\ -arm,\ z_m)$ \\
+\hline
+4 & rear-left & $(-arm,\ +arm,\ z_m)$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Trong code:
+
+\begin{equation}
+    arm = 0.159,\quad z_m = 0.04
+\end{equation}
+
+\subsection{Công thức mixer}
+
+Mixer nhận:
+
+\begin{equation}
+    PWM_{base},\quad
+    \Delta PWM_\phi,\quad
+    \Delta PWM_\theta,\quad
+    \Delta PWM_\psi
+\end{equation}
+
+và tính:
+
+\begin{equation}
+    PWM_1
+    =
+    PWM_{base}
+    +
+    \Delta PWM_\phi
+    -
+    \Delta PWM_\theta
+    -
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_2
+    =
+    PWM_{base}
+    -
+    \Delta PWM_\phi
+    -
+    \Delta PWM_\theta
+    +
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_3
+    =
+    PWM_{base}
+    -
+    \Delta PWM_\phi
+    +
+    \Delta PWM_\theta
+    -
+    \Delta PWM_\psi
+\end{equation}
+
+\begin{equation}
+    PWM_4
+    =
+    PWM_{base}
+    +
+    \Delta PWM_\phi
+    +
+    \Delta PWM_\theta
+    +
+    \Delta PWM_\psi
+\end{equation}
+
+Sau đó từng PWM được giới hạn:
+
+\begin{equation}
+    1100 \leq PWM_i \leq 1940
+\end{equation}
+
+\subsection{Ý nghĩa dấu trong mixer}
+
+Theo comment trong code, lực đẩy theo trục body-z tạo moment roll xấp xỉ theo
+$yF$ và moment pitch xấp xỉ theo $-xF$. Vì vậy:
+
+\begin{itemize}
+    \item Roll correction tăng motor phía trái và giảm motor phía phải.
+    \item Pitch correction tăng motor phía sau và giảm motor phía trước.
+    \item Yaw correction tăng nhóm motor có chiều quay này và giảm nhóm motor
+    có chiều quay ngược lại.
+\end{itemize}
+
+Dấu của mixer phải khớp với thứ tự motor, vị trí motor và chiều quay cánh quạt.
+Nếu đổi thứ tự motor hoặc đổi chiều quay motor, công thức mixer cũng phải được
+kiểm tra lại.
+
+\section{Motor Model}
+
+Motor model mô phỏng đơn giản ESC, motor BLDC và propeller. Input là PWM, output
+là lực đẩy, dòng điện, RPM và torque phản lực.
+
+\subsection{Đổi PWM sang throttle}
+
+PWM được đưa về tỉ lệ ga $u$:
+
+\begin{equation}
+    u
+    =
+    \frac{PWM-PWM_{min}}{PWM_{max}-PWM_{min}}
+\end{equation}
+
+Với:
+
+\begin{equation}
+    0 \leq u \leq 1
+\end{equation}
+
+Điện áp hiệu dụng đưa vào motor:
+
+\begin{equation}
+    V_m = uV_{bat}
+\end{equation}
+
+Trong code:
+
+\begin{equation}
+    V_{bat}=14.8\ \mathrm{V}
+\end{equation}
+
+\subsection{Dòng điện và torque motor}
+
+Hằng số back-EMF được tính từ KV:
+
+\begin{equation}
+    K_e = \frac{60}{2\pi KV}
+\end{equation}
+
+Code dùng:
+
+\begin{equation}
+    K_t = K_e
+\end{equation}
+
+Dòng điện motor:
+
+\begin{equation}
+    I
+    =
+    \frac{V_m-K_e\omega}{R_m}
+\end{equation}
+
+Dòng điện được giới hạn:
+
+\begin{equation}
+    0 \leq I \leq I_{max}
+\end{equation}
+
+Torque motor:
+
+\begin{equation}
+    \tau_m
+    =
+    K_t \max(I-I_0,0)
+\end{equation}
+
+Trong đó $I_0$ là dòng không tải.
+
+\subsection{Động lực học rotor}
+
+Torque tải khí động của propeller:
+
+\begin{equation}
+    \tau_{load}
+    =
+    k_q\omega^2
+\end{equation}
+
+Gia tốc góc rotor:
+
+\begin{equation}
+    \dot{\omega}
+    =
+    \frac{\tau_m-\tau_{load}}{J}
+\end{equation}
+
+Cập nhật rời rạc:
+
+\begin{equation}
+    \omega(k)
+    =
+    \omega(k-1)
+    +
+    \dot{\omega}\Delta t
+\end{equation}
+
+Sau đó $\omega$ được kẹp trong khoảng:
+
+\begin{equation}
+    0 \leq \omega \leq \omega_{max}
+\end{equation}
+
+Trong code:
+
+\begin{equation}
+    \omega_{max}=1800\ \mathrm{rad/s}
+\end{equation}
+
+\subsection{Lực đẩy, torque phản lực và RPM}
+
+Lực đẩy propeller:
+
+\begin{equation}
+    T = k_f\omega^2
+\end{equation}
+
+Torque phản lực:
+
+\begin{equation}
+    Q = k_q\omega^2
+\end{equation}
+
+RPM:
+
+\begin{equation}
+    RPM
+    =
+    \frac{\omega 60}{2\pi}
+\end{equation}
+
+Các tham số mặc định của motor model:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Tham số & Giá trị \\
+\hline
+$KV$ & $1100$ \\
+\hline
+$R_m$ & $0.073\ \Omega$ \\
+\hline
+$I_0$ & $0.9\ \mathrm{A}$ \\
+\hline
+$I_{max}$ & $30\ \mathrm{A}$ \\
+\hline
+$J$ & $2.5\times10^{-5}$ \\
+\hline
+$k_f$ & $4.0\times10^{-6}$ \\
+\hline
+$k_q$ & $1.0\times10^{-7}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Apply lực vào Isaac Sim}
+
+Sau khi motor model trả về lực đẩy $T_i$, controller apply lực lên rigid body
+\texttt{base\_link} tại vị trí của từng motor:
+
+\begin{equation}
+    \mathbf{F}_i
+    =
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        T_i
+    \end{bmatrix}
+\end{equation}
+
+Vì lực được đặt lệch khỏi tâm drone, Isaac Sim tự sinh moment roll/pitch tương
+ứng. Đây là lý do mixer không cần apply moment roll/pitch trực tiếp; nó chỉ cần
+tạo chênh lệch lực motor.
+
+\subsection{Torque phản lực yaw}
+
+Mỗi propeller tạo torque phản lực $Q_i$. Với chiều quay motor:
+
+\begin{equation}
+    d = [1,\ -1,\ 1,\ -1]
+\end{equation}
+
+Torque yaw tổng lên body được tính:
+
+\begin{equation}
+    M_z
+    =
+    \sum_{i=1}^{4} -d_iQ_i
+\end{equation}
+
+Trong code, torque yaw này được đổi thành một cặp lực ngang đặt tại hai điểm
+đối xứng:
+
+\begin{equation}
+    F_y
+    =
+    \frac{M_z}{2arm}
+\end{equation}
+
+Một lực $+F_y$ đặt tại $x=+arm$, lực còn lại $-F_y$ đặt tại $x=-arm$. Hai lực
+này triệt tiêu tổng lực tuyến tính nhưng tạo moment quanh trục $z$.
+
+\subsection{Kết nối giữa motor model và simulator}
+
+Mối quan hệ cuối cùng giữa PWM và chuyển động drone là:
+
+\begin{equation}
+    PWM_i
+    \longrightarrow
+    \omega_i
+    \longrightarrow
+    T_i,Q_i
+    \longrightarrow
+    IsaacSim
+    \longrightarrow
+    x,y,z,\phi,\theta,\psi
+\end{equation}
+
+Như vậy, controller không trực tiếp thay đổi pose của drone. Controller chỉ
+apply lực vật lý, còn chuyển động thật do engine physics của Isaac Sim tích
+phân.

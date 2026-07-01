@@ -1,0 +1,197 @@
+\section{Kiến trúc tổng thể của bộ điều khiển F450}
+
+\input{figures/ovrall_structure}
+
+Phần điều khiển chính của drone F450 được tổ chức theo dạng \textit{cascade
+PID controller}. Lớp trung tâm là \texttt{F450AttitudeHold} trong file
+\texttt{issac\_attitude\_hold.py}. Lớp này không chứa toàn bộ thuật toán trong
+một khối lớn, mà ghép nhiều module nhỏ lại với nhau:
+
+\begin{itemize}
+    \item \texttt{PositionHoldPID}: giữ vị trí ngang $x,y$ và tạo
+    $roll\_target$, $pitch\_target$.
+    \item \texttt{AltitudeHoldPID}: giữ độ cao $z$ và tạo $PWM_{base}$.
+    \item \texttt{AttitudeHoldPID}: giữ roll/pitch và tạo
+    $\Delta PWM_\phi$, $\Delta PWM_\theta$.
+    \item \texttt{YawHoldPID}: giữ yaw và tạo $\Delta PWM_\psi$.
+    \item \texttt{QuadXPwmMixer}: trộn PWM base với các PWM hiệu chỉnh - $\Delta PWM$ để tạo
+    bốn lệnh motor.
+    \item \texttt{MotorModel}: đổi PWM thành lực đẩy, dòng điện, RPM và torque
+    phản lực của từng motor.
+    \item \texttt{PhysicalPropellerSpinner}: làm quay joint cánh quạt vật lý
+    theo RPM mô phỏng.
+    \item \texttt{TrackingLogger}: ghi trạng thái và target ra file CSV để
+    phân tích sau khi bay.
+\end{itemize}
+
+\subsection{Luồng dữ liệu điều khiển}
+
+Trong mỗi bước vật lý của Isaac Sim, controller đọc trạng thái hiện tại của
+drone:
+
+\begin{equation}
+    x,\ y,\ z,\quad
+    v_x,\ v_y,\ v_z,\quad
+    \phi,\ \theta,\ \psi,\quad
+    p,\ q,\ r
+\end{equation}
+
+Trong đó $\phi$ là roll, $\theta$ là pitch, $\psi$ là yaw, còn $p,q,r$ là vận
+tốc góc quanh các trục body.
+
+Sau đó luồng điều khiển chính là:
+
+\begin{equation}
+    x_d,y_d,x,y,v_x,v_y,\psi
+    \longrightarrow
+    PositionPID
+    \longrightarrow
+    \phi_d,\theta_d
+\end{equation}
+
+\begin{equation}
+    z_d,z,v_z
+    \longrightarrow
+    AltitudePID
+    \longrightarrow
+    PWM_{base}
+\end{equation}
+
+\begin{equation}
+    \phi_d,\theta_d,\phi,\theta,p,q
+    \longrightarrow
+    AttitudePID
+    \longrightarrow
+    \Delta PWM_\phi,\Delta PWM_\theta
+\end{equation}
+
+\begin{equation}
+    \psi_d,\psi,r
+    \longrightarrow
+    YawPID
+    \longrightarrow
+    \Delta PWM_\psi
+\end{equation}
+
+Các output trên được đưa vào mixer:
+
+\begin{equation}
+    PWM_{base},
+    \Delta PWM_\phi,
+    \Delta PWM_\theta,
+    \Delta PWM_\psi
+    \longrightarrow
+    Mixer
+    \longrightarrow
+    PWM_1,\ PWM_2,\ PWM_3,\ PWM_4
+\end{equation}
+
+Cuối cùng, từng lệnh PWM đi qua motor model để tạo lực đẩy:
+
+\begin{equation}
+    PWM_i
+    \longrightarrow
+    MotorModel_i
+    \longrightarrow
+    T_i,\ RPM_i,\ Q_i
+\end{equation}
+
+Trong đó $T_i$ là lực đẩy của motor thứ $i$, còn $Q_i$ là torque phản lực do
+cánh quạt tạo ra.
+
+\subsection{Vì sao dùng cấu trúc cascade}
+
+Drone là hệ động lực học nhiều tầng. Vị trí không thể điều khiển trực tiếp bằng
+PWM, vì PWM trước hết tạo lực đẩy, lực đẩy tạo moment và gia tốc, rồi gia tốc
+mới làm thay đổi vị trí. Vì vậy project chia bài toán thành nhiều tầng:
+
+\begin{itemize}
+    \item Tầng ngoài cùng - outer loop quyết định drone cần nghiêng bao nhiêu để quay về vị
+    trí mong muốn.
+    \item Tầng độ cao quyết định tổng lực nâng cần tăng hay giảm bao nhiêu.
+    \item Tầng attitude làm drone bám theo góc roll/pitch mong muốn.
+    \item Tầng yaw giữ hướng quay quanh trục đứng.
+    \item Mixer biến các lệnh trừu tượng thành lệnh cụ thể cho bốn motor.
+\end{itemize}
+
+Cách chia tầng này giúp mỗi PID có một nhiệm vụ rõ ràng. Position PID không cần
+biết chi tiết từng motor; attitude PID không cần biết target vị trí đến từ đâu;
+motor model chỉ cần nhận PWM và trả về lực.
+
+\subsection{Chu kỳ điều khiển trong \texttt{on\_physics\_step}}
+
+Hàm \texttt{on\_physics\_step(dt)} là vòng lặp điều khiển được gọi mỗi bước
+physics. Các bước chính là:
+
+\begin{enumerate}
+    \item Lấy rigid body \texttt{base\_link} từ \texttt{dynamic\_control}.
+    \item Đọc pose, vận tốc tuyến tính và vận tốc góc.
+    \item Đổi quaternion sang Euler bằng \texttt{quat\_to\_euler}.
+    \item Nếu chưa đặt target $x,y$, tự lấy vị trí ban đầu làm target giữ vị
+    trí.
+    \item Tính target roll/pitch từ position controller.
+    \item Tính $PWM_{base}$ từ altitude controller.
+    \item Tính yaw correction nếu yaw hold đang bật.
+    \item Tính roll/pitch correction từ attitude controller.
+    \item Trộn bốn lệnh PWM bằng mixer.
+    \item Cập nhật bốn motor model và apply lực đẩy vào Isaac Sim.
+    \item Tính torque phản lực yaw, quay cánh quạt vật lý, ghi log và in debug.
+\end{enumerate}
+
+Như vậy, Isaac Sim vừa là môi trường vật lý nhận lực từ controller, vừa là cảm
+biến trả lại trạng thái cho controller ở bước sau.
+
+\subsection{Các tham số mặc định quan trọng}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Nhóm & Tham số & Giá trị mặc định trong code \\
+\hline
+PWM & $PWM_{min}, PWM_{max}$ & $1100,\ 1940$ \\
+\hline
+F450 main & $z_d$ & $1.5$ m \\
+\hline
+F450 main & $PWM_{hover}$ & $1650$  \\
+\hline
+Position & $K_{p_x},K_{d_x},K_{i_x}$ & $0.55,\ 1.30,\ 0.03$ \\
+\hline
+Position & $K_{p_y},K_{d_y},K_{i_y}$ & $0.55,\ 1.30,\ 0.03$ \\
+\hline
+Position & giới hạn gia tốc & $1.20\ \mathrm{m/s^2}$ \\
+\hline
+Position & giới hạn góc & $6.5^\circ$ \\
+\hline
+Altitude & $K_{p_z},K_{d_z},K_{i_z}$ & $220,\ 150,\ 15$ \\
+\hline
+Attitude & $K_{p},K_i,K_d$ roll/pitch & $520,\ 25,\ 130$ \\
+\hline
+Yaw & $K_{p_\psi},K_{i_\psi},K_{d_\psi}$ & $95,\ 8,\ 28$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Lưu ý: các giá trị này có thể thay đổi trong lúc chạy bằng cách áp đặt giá trị mới vào Script Editor của Isaac Sim. 
+
+\subsection{Các hàm tiện ích chung}
+
+File \texttt{control\_utils.py} chứa các hàm nhỏ nhưng quan trọng:
+
+\begin{equation}
+    clamp(x,l,h)=\max(l,\min(x,h))
+\end{equation}
+
+Hàm này dùng để giới hạn PWM, góc, gia tốc và tích phân PID trong vùng an toàn.
+
+Hàm \texttt{wrap\_angle} đưa góc về khoảng:
+
+\begin{equation}
+    -\pi \leq angle \leq \pi
+\end{equation}
+
+Nhờ đó sai số góc luôn lấy theo đường ngắn nhất. Ví dụ, sai số giữa
+$179^\circ$ và $-179^\circ$ phải là $2^\circ$, không phải $358^\circ$.
+
+Hàm \texttt{quat\_to\_euler} đổi quaternion của Isaac Sim sang roll, pitch,
+yaw. Đây là bước cần thiết vì controller attitude và yaw làm việc trực tiếp với
+góc Euler.

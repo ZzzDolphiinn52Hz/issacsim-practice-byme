@@ -1,22 +1,58 @@
-\contentsline {section}{\numberline {1}Position Hold PID}{2}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Công thức PID chuẩn}{2}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Sai số vị trí trong Position Hold}{2}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Sai số vận tốc}{3}{subsection.1.3}%
-\contentsline {subsection}{\numberline {1.4}Tích phân sai số}{3}{subsection.1.4}%
-\contentsline {subsection}{\numberline {1.5}PID vị trí tạo gia tốc mong muốn}{4}{subsection.1.5}%
-\contentsline {subsection}{\numberline {1.6}Bản chất vật lý của việc chọn gia tốc làm output}{4}{subsection.1.6}%
-\contentsline {subsection}{\numberline {1.7}Giới hạn gia tốc ngang}{5}{subsection.1.7}%
-\contentsline {subsection}{\numberline {1.8}Đổi từ [W] sang [B]}{5}{subsection.1.8}%
-\contentsline {subsection}{\numberline {1.9}Bản chất vật lý - nghiêng drone để tạo gia tốc ngang}{6}{subsection.1.9}%
-\contentsline {subsection}{\numberline {1.10}Tính pitch target}{7}{subsection.1.10}%
-\contentsline {subsection}{\numberline {1.11}Tính roll target}{7}{subsection.1.11}%
-\contentsline {subsection}{\numberline {1.12}Giới hạn góc nghiêng}{8}{subsection.1.12}%
-\contentsline {subsection}{\numberline {1.13}Công thức tổng hợp của Position Hold PID}{8}{subsection.1.13}%
-\contentsline {section}{\numberline {2}Cách xác định output của một bộ PID}{10}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Output của các tầng PID trong project}{10}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}Position PID}{10}{subsubsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.2}Altitude PID}{10}{subsubsection.2.1.2}%
-\contentsline {subsubsection}{\numberline {2.1.3}Attitude PID}{11}{subsubsection.2.1.3}%
-\contentsline {subsubsection}{\numberline {2.1.4}Yaw PID}{11}{subsubsection.2.1.4}%
-\contentsline {subsection}{\numberline {2.2}Mixer}{12}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Tóm tắt nguyên tắc chọn output PID}{12}{subsection.2.3}%
+\contentsline {section}{\numberline {1}Kiến trúc tổng thể của bộ điều khiển F450}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Luồng dữ liệu điều khiển}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Vì sao dùng cấu trúc cascade}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Chu kỳ điều khiển trong \texttt {on\_physics\_step}}{4}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Các tham số mặc định quan trọng}{5}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Các hàm tiện ích chung}{5}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Position Hold PID}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Công thức PID chuẩn}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Sai số vị trí trong Position Hold}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Sai số vận tốc}{7}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Tích phân sai số}{7}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}PID vị trí tạo gia tốc mong muốn}{8}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Bản chất vật lý của việc chọn gia tốc làm output}{8}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Giới hạn gia tốc ngang}{9}{subsection.2.7}%
+\contentsline {subsection}{\numberline {2.8}Đổi từ [W] sang [B]}{9}{subsection.2.8}%
+\contentsline {subsection}{\numberline {2.9}Bản chất vật lý - nghiêng drone để tạo gia tốc ngang}{10}{subsection.2.9}%
+\contentsline {subsection}{\numberline {2.10}Tính pitch target}{11}{subsection.2.10}%
+\contentsline {subsection}{\numberline {2.11}Tính roll target}{11}{subsection.2.11}%
+\contentsline {subsection}{\numberline {2.12}Giới hạn góc nghiêng}{12}{subsection.2.12}%
+\contentsline {subsection}{\numberline {2.13}Công thức tổng hợp của Position Hold PID}{12}{subsection.2.13}%
+\contentsline {section}{\numberline {3}Cách xác định output của một bộ PID}{14}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Output của các tầng PID trong project}{14}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Position PID}{14}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Altitude PID}{14}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Attitude PID}{15}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Yaw PID}{15}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.2}Mixer}{16}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Tóm tắt nguyên tắc chọn output PID}{16}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Altitude Hold PID}{18}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Sai số độ cao và vận tốc đứng}{18}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Tích phân độ cao}{18}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Output của Altitude PID}{18}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Ý nghĩa vật lý}{19}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Attitude Hold PID}{19}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Sai số roll/pitch}{19}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Thành phần vi phân dùng vận tốc góc}{19}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Tích phân và giới hạn output}{20}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Yaw Hold PID}{20}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Sai số yaw}{20}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Công thức yaw correction}{21}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Vai trò của yaw correction trong quadcopter}{21}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Quad X PWM Mixer}{22}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Công thức mixer}{22}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Ý nghĩa dấu trong mixer}{22}{subsection.7.2}%
+\contentsline {section}{\numberline {8}Motor Model}{23}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Đổi PWM sang throttle}{23}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Dòng điện và torque motor}{23}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Động lực học rotor}{23}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Lực đẩy, torque phản lực và RPM}{24}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Apply lực vào Isaac Sim}{24}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Torque phản lực yaw}{25}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Kết nối giữa motor model và simulator}{25}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Propeller Spinner}{26}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Đổi RPM sang vận tốc joint}{26}{subsection.10.1}%
+\contentsline {section}{\numberline {11}Tracking Logger}{26}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Các đại lượng được ghi}{26}{subsection.11.1}%
+\contentsline {section}{\numberline {12}Compatibility Mixin}{27}{section.12}%
+\contentsline {section}{\numberline {13}Tóm tắt toàn bộ hệ thống}{27}{section.13}%
