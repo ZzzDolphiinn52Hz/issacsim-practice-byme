@@ -86,6 +86,44 @@ và tính:
     \Delta PWM_\psi
 \end{equation}
 
+Có thể được viết dưới dạng ma trận:
+
+\begin{equation}
+    \begin{bmatrix}
+        PWM_1 \\
+        PWM_2 \\
+        PWM_3 \\
+        PWM_4
+    \end{bmatrix}
+    = PWM_{base}
+    \begin{bmatrix}
+        1 \\
+        1 \\
+        1 \\
+        1
+    \end{bmatrix}
+    + \Delta PWM_{\phi}
+    \begin{bmatrix}
+        +1 \\
+        -1 \\
+        -1 \\
+        +1
+    \end{bmatrix}
+    + \Delta PWM_{\theta}
+    \begin{bmatrix}
+        -1 \\
+        -1 \\
+        +1 \\
+        +1
+    \end{bmatrix}
+    + \Delta PWM_{\psi}
+    \begin{bmatrix}
+        -1 \\
+        +1 \\
+        -1 \\
+        +1
+    \end{bmatrix}
+\end{equation}
 Sau đó từng PWM được giới hạn:
 
 \begin{equation}
@@ -94,19 +132,757 @@ Sau đó từng PWM được giới hạn:
 
 \subsection{Ý nghĩa dấu trong mixer}
 
-Theo comment trong code, lực đẩy theo trục body-z tạo moment roll xấp xỉ theo
-$yF$ và moment pitch xấp xỉ theo $-xF$. Vì vậy:
+Các dấu cộng/trừ trong mixer không được chọn ngẫu nhiên. Chúng xuất phát từ
+vị trí của từng motor trên thân drone và chiều quay của từng cánh quạt.
 
+Ý tưởng chính của mixer là:
+
+\begin{equation}
+    PWM_{base}
+    \rightarrow
+    \text{tạo lực nâng chung}
+\end{equation}
+
+\begin{equation}
+    \Delta PWM_\phi,\ \Delta PWM_\theta,\ \Delta PWM_\psi
+    \rightarrow
+    \text{tạo chênh lệch lực để sinh moment quay}
+\end{equation}
+
+Trong đó:
 \begin{itemize}
-    \item Roll correction tăng motor phía trái và giảm motor phía phải.
-    \item Pitch correction tăng motor phía sau và giảm motor phía trước.
-    \item Yaw correction tăng nhóm motor có chiều quay này và giảm nhóm motor
-    có chiều quay ngược lại.
+    \item $\Delta PWM_\phi$: hiệu chỉnh roll quanh trục $x$.
+    \item $\Delta PWM_\theta$: hiệu chỉnh pitch quanh trục $y$.
+    \item $\Delta PWM_\psi$: hiệu chỉnh yaw quanh trục $z$.
 \end{itemize}
 
-Dấu của mixer phải khớp với thứ tự motor, vị trí motor và chiều quay cánh quạt.
-Nếu đổi thứ tự motor hoặc đổi chiều quay motor, công thức mixer cũng phải được
-kiểm tra lại.
+\subsubsection{Quy ước hệ trục và vị trí motor}
+
+Trong project này, hệ trục body của drone được quy ước:
+
+\begin{equation}
+    +x:\ \text{phía trước},\qquad
+    +y:\ \text{phía trái},\qquad
+    +z:\ \text{hướng lên}
+\end{equation}
+
+Bốn motor được đặt tại các vị trí:
+
+\begin{equation}
+    M_1: (+x,+y)
+\end{equation}
+
+\begin{equation}
+    M_2: (+x,-y)
+\end{equation}
+
+\begin{equation}
+    M_3: (-x,-y)
+\end{equation}
+
+\begin{equation}
+    M_4: (-x,+y)
+\end{equation}
+
+Do đó:
+\begin{itemize}
+    \item $M_1$ và $M_4$ nằm bên trái drone vì có $y>0$.
+    \item $M_2$ và $M_3$ nằm bên phải drone vì có $y<0$.
+    \item $M_1$ và $M_2$ nằm phía trước vì có $x>0$.
+    \item $M_3$ và $M_4$ nằm phía sau vì có $x<0$.
+\end{itemize}
+
+\subsubsection{Vì sao chênh lệch lực tạo ra moment?}
+
+Mỗi motor tạo ra một lực nâng $F_i$ theo hướng lên. Vì motor không nằm ở tâm
+drone, lực nâng này sẽ tạo moment quay quanh tâm drone.
+
+Công thức moment tổng quát là:
+
+\begin{equation}
+    \boldsymbol{\tau}
+    =
+    \mathbf{r}
+    \times
+    \mathbf{F}
+\end{equation}
+
+Trong đó:
+\begin{itemize}
+    \item $\mathbf{r}$ là vector từ tâm drone đến vị trí motor.
+    \item $\mathbf{F}$ là lực nâng do motor tạo ra.
+    \item $\boldsymbol{\tau}$ là moment làm drone quay.
+\end{itemize}
+
+Nếu lực đặt đúng tại tâm drone thì $\mathbf{r}=0$, do đó không tạo moment.
+Ngược lại, nếu lực đặt lệch khỏi tâm, tức là $\mathbf{r}\neq 0$, lực đó sẽ làm
+drone quay.
+
+Với motor thứ $i$, ta có thể viết:
+
+\begin{equation}
+    \mathbf{r}_i
+    =
+    \begin{bmatrix}
+        x_i\\
+        y_i\\
+        0
+    \end{bmatrix},
+    \qquad
+    \mathbf{F}_i
+    =
+    \begin{bmatrix}
+        0\\
+        0\\
+        F_i
+    \end{bmatrix}
+\end{equation}
+
+Moment do motor đó tạo ra là:
+
+\begin{equation}
+    \boldsymbol{\tau}_i
+    =
+    \mathbf{r}_i
+    \times
+    \mathbf{F}_i
+    =
+    \begin{bmatrix}
+        y_iF_i\\
+        -x_iF_i\\
+        0
+    \end{bmatrix}
+\end{equation}
+
+Do đó:
+
+\begin{equation}
+    \tau_x = y_iF_i
+\end{equation}
+
+\begin{equation}
+    \tau_y = -x_iF_i
+\end{equation}
+
+Nghĩa là:
+\begin{itemize}
+    \item Moment roll quanh trục $x$ phụ thuộc vào $y_iF_i$.
+    \item Moment pitch quanh trục $y$ phụ thuộc vào $-x_iF_i$.
+\end{itemize}
+
+\subsubsection{Ý nghĩa của $PWM_{base}$}
+
+$PWM_{base}$ là PWM nền được cộng đều vào cả bốn motor:
+
+\begin{equation}
+    PWM_1 = PWM_2 = PWM_3 = PWM_4 = PWM_{base}
+\end{equation}
+
+Khi bốn motor nhận PWM gần như bằng nhau, chúng tạo lực nâng gần như bằng nhau.
+Khi đó các moment roll và pitch triệt tiêu nhau, drone chủ yếu hover, bay lên
+hoặc bay xuống.
+
+Có thể hiểu:
+
+\begin{equation}
+    PWM_{base}
+    \rightarrow
+    \text{điều khiển tổng lực nâng}
+\end{equation}
+
+\subsubsection{Ý nghĩa chung của các delta PWM}
+
+Các thành phần delta PWM không nhằm tăng đều cả bốn motor, mà nhằm tăng motor
+này và giảm motor khác để tạo mất cân bằng lực.
+
+Dạng tổng quát của mixer là:
+
+\begin{equation}
+\begin{bmatrix}
+    PWM_1\\
+    PWM_2\\
+    PWM_3\\
+    PWM_4
+\end{bmatrix}
+=
+PWM_{base}
+\begin{bmatrix}
+    1\\
+    1\\
+    1\\
+    1
+\end{bmatrix}
++
+\Delta PWM_\phi
+\begin{bmatrix}
+    +1\\
+    -1\\
+    -1\\
+    +1
+\end{bmatrix}
++
+\Delta PWM_\theta
+\begin{bmatrix}
+    -1\\
+    -1\\
+    +1\\
+    +1
+\end{bmatrix}
++
+\Delta PWM_\psi
+\begin{bmatrix}
+    -1\\
+    +1\\
+    -1\\
+    +1
+\end{bmatrix}
+\end{equation}
+
+Các vector dấu của delta PWM đều có tổng bằng $0$:
+
+\begin{equation}
+    (+1)+(-1)+(-1)+(+1)=0
+\end{equation}
+
+\begin{equation}
+    (-1)+(-1)+(+1)+(+1)=0
+\end{equation}
+
+\begin{equation}
+    (-1)+(+1)+(-1)+(+1)=0
+\end{equation}
+
+Vì vậy, về ý tưởng, các delta PWM không làm thay đổi nhiều tổng lực nâng. Chúng
+chủ yếu tạo chênh lệch lực giữa các motor để tạo moment quay.
+
+\subsubsection{Roll correction tạo moment roll}
+
+Roll là chuyển động quay quanh trục $x$. Moment roll tổng do bốn motor tạo ra
+có thể viết là:
+
+\begin{equation}
+    \tau_x
+    =
+    \sum_{i=1}^{4} y_iF_i
+\end{equation}
+
+Trong đó $y_i$ là vị trí của motor theo trục $y$, còn $F_i$ là lực nâng của
+motor đó.
+
+Với layout hiện tại:
+
+\begin{equation}
+    y_1 = +l,\qquad y_4 = +l
+\end{equation}
+
+\begin{equation}
+    y_2 = -l,\qquad y_3 = -l
+\end{equation}
+
+Nếu $\Delta PWM_\phi > 0$, mixer chọn:
+
+\begin{equation}
+    M_1:\ +,\qquad
+    M_2:\ -,\qquad
+    M_3:\ -,\qquad
+    M_4:\ +
+\end{equation}
+
+Nghĩa là:
+\begin{itemize}
+    \item $M_1$ và $M_4$ tăng lực nâng.
+    \item $M_2$ và $M_3$ giảm lực nâng.
+\end{itemize}
+
+Ta có thể viết gần đúng:
+
+\begin{equation}
+    F_1 = F_0 + \Delta F
+\end{equation}
+
+\begin{equation}
+    F_4 = F_0 + \Delta F
+\end{equation}
+
+\begin{equation}
+    F_2 = F_0 - \Delta F
+\end{equation}
+
+\begin{equation}
+    F_3 = F_0 - \Delta F
+\end{equation}
+
+Khi đó:
+
+\begin{equation}
+\begin{aligned}
+    \tau_x
+    &=
+    y_1F_1 + y_2F_2 + y_3F_3 + y_4F_4\\
+    &=
+    l(F_0+\Delta F)
+    -l(F_0-\Delta F)
+    -l(F_0-\Delta F)
+    +l(F_0+\Delta F)
+\end{aligned}
+\end{equation}
+
+Các thành phần $F_0$ triệt tiêu nhau, còn lại:
+
+\begin{equation}
+    \tau_x = 4l\Delta F
+\end{equation}
+
+Vì vậy, nếu $\Delta F>0$ thì:
+
+\begin{equation}
+    \tau_x > 0
+\end{equation}
+
+Nghĩa là chênh lệch lực trái--phải tạo ra moment roll dương.
+
+\subsubsection{Vì sao roll correction không làm đổi nhiều tổng lực nâng?}
+
+Tổng lực nâng của bốn motor là:
+
+\begin{equation}
+    F_{total}
+    =
+    F_1 + F_2 + F_3 + F_4
+\end{equation}
+
+Thay các lực sau khi roll correction:
+
+\begin{equation}
+\begin{aligned}
+    F_{total}
+    &=
+    (F_0+\Delta F)
+    +(F_0-\Delta F)
+    +(F_0-\Delta F)
+    +(F_0+\Delta F)
+\end{aligned}
+\end{equation}
+
+Các thành phần $\Delta F$ triệt tiêu:
+
+\begin{equation}
+    +\Delta F-\Delta F-\Delta F+\Delta F=0
+\end{equation}
+
+Do đó:
+
+\begin{equation}
+    F_{total}=4F_0
+\end{equation}
+
+Vì vậy roll correction gần như không làm đổi tổng lực nâng. Nó chủ yếu làm lực
+bên trái lớn hơn bên phải, từ đó tạo moment roll.
+
+\subsubsection{Pitch correction tạo moment pitch}
+
+Pitch là chuyển động quay quanh trục $y$. Moment pitch tổng có dạng:
+
+\begin{equation}
+    \tau_y
+    =
+    \sum_{i=1}^{4} -x_iF_i
+\end{equation}
+
+Motor phía trước có $x>0$ là $M_1$ và $M_2$. Motor phía sau có $x<0$ là $M_3$
+và $M_4$.
+
+Nếu $\Delta PWM_\theta > 0$, mixer chọn:
+
+\begin{equation}
+    M_1:\ -,\qquad
+    M_2:\ -,\qquad
+    M_3:\ +,\qquad
+    M_4:\ +
+\end{equation}
+
+Nghĩa là:
+\begin{itemize}
+    \item $M_1$ và $M_2$ giảm lực nâng.
+    \item $M_3$ và $M_4$ tăng lực nâng.
+\end{itemize}
+
+Khi đó phía sau đẩy mạnh hơn phía trước. Vì phía sau có $x<0$, theo công thức:
+
+\begin{equation}
+    \tau_y = \sum_{i=1}^{4} -x_iF_i
+\end{equation}
+
+sự tăng lực ở phía sau sẽ tạo moment pitch dương theo quy ước của project.
+
+Do đó vector dấu của pitch correction là:
+
+\begin{equation}
+    \Delta PWM_\theta
+    \begin{bmatrix}
+        -1\\
+        -1\\
+        +1\\
+        +1
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection{Yaw correction tạo moment yaw}
+
+Yaw là chuyển động quay quanh trục $z$. Phần yaw khó hơn roll và pitch vì yaw
+không được tạo chủ yếu bằng cách tạo chênh lệch lực nâng trái--phải hoặc
+trước--sau. Yaw chủ yếu được tạo bởi torque phản lực của cánh quạt.
+
+Khi một motor làm cánh quạt quay, motor tác dụng một torque lên cánh quạt.
+Theo định luật III Newton, cánh quạt cũng tác dụng ngược lại một torque lên
+thân drone. Vì vậy, khi cánh quạt quay một chiều, thân drone có xu hướng quay chiều ngược lại. 
+
+Đây là nguồn gốc của yaw torque.
+
+Trong project, chiều quay motor được quy ước bởi vector:
+
+\begin{equation}
+    d =
+    \begin{bmatrix}
+        +1\\
+        -1\\
+        +1\\
+        -1
+    \end{bmatrix}
+\end{equation}
+
+Nghĩa là $M_1$ và $M_3$ quay cùng một chiều, còn $M_2$ và $M_4$ quay chiều
+ngược lại.
+
+Gọi $Q_i$ là reaction torque của motor thứ $i$. Torque yaw tổng tác dụng lên
+body được mô hình hóa bởi:
+
+\begin{equation}
+    M_z
+    =
+    \sum_{i=1}^{4} -d_iQ_i
+\end{equation}
+
+Viết tường minh:
+
+\begin{equation}
+    M_z
+    =
+    -d_1Q_1
+    -d_2Q_2
+    -d_3Q_3
+    -d_4Q_4
+\end{equation}
+
+Vì:
+
+\begin{equation}
+    d_1=+1,\quad
+    d_2=-1,\quad
+    d_3=+1,\quad
+    d_4=-1
+\end{equation}
+
+nên:
+
+\begin{equation}
+\begin{aligned}
+    M_z
+    &=
+    -(+1)Q_1
+    -(-1)Q_2
+    -(+1)Q_3
+    -(-1)Q_4\\
+    &=
+    -Q_1 + Q_2 - Q_3 + Q_4
+\end{aligned}
+\end{equation}
+
+Khi hover đều, bốn motor tạo reaction torque gần như bằng nhau:
+
+\begin{equation}
+    Q_1 = Q_2 = Q_3 = Q_4 = Q_0
+\end{equation}
+
+Thay vào công thức trên:
+
+\begin{equation}
+\begin{aligned}
+    M_z
+    &=
+    -Q_0 + Q_0 - Q_0 + Q_0\\
+    &=
+    0
+\end{aligned}
+\end{equation}
+
+Vì vậy, khi bốn motor chạy đều, các reaction torque quanh trục $z$ triệt tiêu
+nhau và drone không tự quay yaw.
+
+\textbf{Tạo yaw moment dương}
+
+Từ công thức:
+
+\begin{equation}
+    M_z = -Q_1 + Q_2 - Q_3 + Q_4
+\end{equation}
+
+ta thấy $Q_2$ và $Q_4$ đóng góp dấu dương vào $M_z$, còn $Q_1$ và $Q_3$ đóng
+góp dấu âm vào $M_z$.
+
+Do đó, để tạo yaw moment dương:
+
+\begin{equation}
+    M_z > 0
+\end{equation}
+
+ta cần tăng reaction torque của nhóm $M_2$, $M_4$ và giảm reaction torque của
+nhóm $M_1$, $M_3$:
+
+\begin{equation}
+    Q_2 \uparrow,\quad Q_4 \uparrow
+\end{equation}
+
+\begin{equation}
+    Q_1 \downarrow,\quad Q_3 \downarrow
+\end{equation}
+
+Vì reaction torque $Q_i$ tăng khi PWM motor tăng, điều này tương ứng với:
+
+\begin{equation}
+    PWM_2 \uparrow,\quad PWM_4 \uparrow
+\end{equation}
+
+\begin{equation}
+    PWM_1 \downarrow,\quad PWM_3 \downarrow
+\end{equation}
+
+Do đó, nếu $\Delta PWM_\psi > 0$, mixer chọn:
+
+\begin{equation}
+    M_1:\ -,\qquad
+    M_2:\ +,\qquad
+    M_3:\ -,\qquad
+    M_4:\ +
+\end{equation}
+
+Hay viết dưới dạng vector dấu:
+
+\begin{equation}
+    \Delta PWM_\psi
+    \begin{bmatrix}
+        -1\\
+        +1\\
+        -1\\
+        +1
+    \end{bmatrix}
+\end{equation}
+
+\paragraph{Chứng minh bằng công thức}
+
+Giả sử ban đầu reaction torque của bốn motor bằng nhau:
+
+\begin{equation}
+    Q_1 = Q_2 = Q_3 = Q_4 = Q_0
+\end{equation}
+
+Sau khi áp dụng yaw correction dương:
+
+\begin{equation}
+    Q_1 = Q_0 - \Delta Q
+\end{equation}
+
+\begin{equation}
+    Q_2 = Q_0 + \Delta Q
+\end{equation}
+
+\begin{equation}
+    Q_3 = Q_0 - \Delta Q
+\end{equation}
+
+\begin{equation}
+    Q_4 = Q_0 + \Delta Q
+\end{equation}
+
+Thay vào công thức:
+
+\begin{equation}
+    M_z = -Q_1 + Q_2 - Q_3 + Q_4
+\end{equation}
+
+ta được:
+
+\begin{equation}
+\begin{aligned}
+    M_z
+    &=
+    -(Q_0-\Delta Q)
+    +(Q_0+\Delta Q)
+    -(Q_0-\Delta Q)
+    +(Q_0+\Delta Q)
+\end{aligned}
+\end{equation}
+
+Khai triển:
+
+\begin{equation}
+\begin{aligned}
+    M_z
+    &=
+    -Q_0+\Delta Q
+    +Q_0+\Delta Q
+    -Q_0+\Delta Q
+    +Q_0+\Delta Q
+\end{aligned}
+\end{equation}
+
+Các thành phần $Q_0$ triệt tiêu nhau:
+
+\begin{equation}
+    -Q_0 + Q_0 - Q_0 + Q_0 = 0
+\end{equation}
+
+Còn lại:
+
+\begin{equation}
+    M_z = 4\Delta Q
+\end{equation}
+
+Vì vậy, nếu:
+
+\begin{equation}
+    \Delta Q > 0
+\end{equation}
+
+thì:
+
+\begin{equation}
+    M_z > 0
+\end{equation}
+
+Nghĩa là drone tạo được yaw moment dương.
+
+\paragraph{Vì sao yaw correction không làm đổi nhiều tổng lực nâng?}
+
+Vector dấu của yaw correction là:
+
+\begin{equation}
+    \begin{bmatrix}
+        -1\\
+        +1\\
+        -1\\
+        +1
+    \end{bmatrix}
+\end{equation}
+
+Tổng các phần tử của vector này bằng $0$:
+
+\begin{equation}
+    (-1)+(+1)+(-1)+(+1)=0
+\end{equation}
+
+Điều này có nghĩa là mixer giảm hai motor và tăng hai motor. Vì vậy, về ý
+tưởng, tổng lực nâng không thay đổi nhiều. Tuy nhiên, do hai nhóm motor quay
+ngược chiều nhau, reaction torque không còn cân bằng nữa, nên drone sẽ quay
+quanh trục yaw.
+
+\paragraph{So sánh yaw với roll và pitch}
+
+Roll và pitch được tạo chủ yếu bởi chênh lệch lực nâng theo vị trí motor:
+
+\begin{equation}
+    \tau_x = \sum_{i=1}^{4} y_iF_i
+\end{equation}
+
+\begin{equation}
+    \tau_y = \sum_{i=1}^{4} -x_iF_i
+\end{equation}
+
+Nghĩa là roll và pitch phụ thuộc vào motor nằm bên trái--phải hoặc trước--sau.
+
+Yaw thì khác. Yaw chủ yếu phụ thuộc vào chiều quay của cánh quạt:
+
+\begin{equation}
+    M_z = \sum_{i=1}^{4} -d_iQ_i
+\end{equation}
+
+Do đó, yaw correction không chia motor theo trái--phải hoặc trước--sau, mà chia
+theo hai nhóm motor quay ngược chiều:
+
+\begin{equation}
+    M_1,\ M_3
+\end{equation}
+
+và:
+
+\begin{equation}
+    M_2,\ M_4
+\end{equation}
+
+\paragraph{Cách nhớ nhanh}
+
+Trong project:
+
+\begin{equation}
+    d =
+    \begin{bmatrix}
+        +1\\
+        -1\\
+        +1\\
+        -1
+    \end{bmatrix}
+\end{equation}
+
+và:
+
+\begin{equation}
+    M_z = \sum_{i=1}^{4} -d_iQ_i
+\end{equation}
+
+Do có dấu trừ trước $d_i$, ta có:
+
+\begin{equation}
+    d_i = +1
+    \Rightarrow
+    \text{đóng góp yaw âm}
+\end{equation}
+
+\begin{equation}
+    d_i = -1
+    \Rightarrow
+    \text{đóng góp yaw dương}
+\end{equation}
+
+Vì vậy, muốn tạo yaw moment dương thì giảm nhóm $d_i=+1$ và tăng nhóm
+$d_i=-1$:
+
+\begin{equation}
+    M_1:\ -,\qquad
+    M_2:\ +,\qquad
+    M_3:\ -,\qquad
+    M_4:\ +
+\end{equation}
+
+Do đó:
+
+\begin{equation}
+    \Delta PWM_\psi
+    \begin{bmatrix}
+        -1\\
+        +1\\
+        -1\\
+        +1
+    \end{bmatrix}
+\end{equation}
+
+\paragraph{Tóm tắt}
+
+Motor quay cánh quạt sẽ tạo reaction torque lên thân drone. Hai motor $M_1$,
+$M_3$ tạo yaw torque một chiều, còn hai motor $M_2$, $M_4$ tạo yaw torque chiều
+ngược lại. Khi hover đều, hai chiều torque này triệt tiêu nhau. Muốn drone quay
+yaw, mixer tăng PWM của một nhóm và giảm PWM của nhóm còn lại. Nhờ vậy tổng lực
+nâng gần như giữ nguyên, nhưng torque yaw không còn cân bằng, nên drone quay
+quanh trục $z$.
 
 \section{Motor Model}
 
