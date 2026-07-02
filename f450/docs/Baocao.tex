@@ -11,9 +11,48 @@
 \usepackage{indentfirst}
 \setlength{\parindent}{1.5em}
 \setlength{\parskip}{0pt}
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.2em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{4.8em}{4.2em}}
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{9.0em}{5.0em}}
+\makeatother
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning}
 \usepackage{graphicx}
+\usepackage{listings}
+
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{210,210,210}
+\definecolor{codekeyword}{RGB}{0,80,150}
+\definecolor{codestring}{RGB}{150,40,40}
+\definecolor{codecomment}{RGB}{80,120,80}
+
+\lstdefinestyle{reportcode}{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{codekeyword}\bfseries,
+    stringstyle=\color{codestring},
+    commentstyle=\color{codecomment},
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=4,
+    numbers=none,
+    xleftmargin=0.6em,
+    framexleftmargin=0.6em
+}
+\lstset{style=reportcode}
+
+\newcommand{\reportchapter}[1]{
+    \clearpage
+    \phantomsection
+    \section*{#1}
+    \addcontentsline{toc}{section}{#1}
+}
 
 \title{F450 Drone PID Cascade Controller}
 \author{Tuan Anh - dolphiinn}
@@ -23,6 +62,13 @@
 \maketitle
 \tableofcontents
 \newpage
+
+\reportchapter{Chapter 1: Cơ sở lý thuyết và thiết kế controller}
+\renewcommand{\thesection}{1.\arabic{section}}
+\renewcommand{\theHsection}{1.\arabic{section}}
+\renewcommand{\theHsubsection}{1.\arabic{section}.\arabic{subsection}}
+\renewcommand{\theHsubsubsection}{1.\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+\setcounter{section}{0}
 
 \input{sections/overall-architecture-vie}
 \newpage
@@ -35,6 +81,16 @@
 \input{sections/determine-output-pid}
 \newpage
 \input{sections/support-modules-vie}
+\newpage
+
+\reportchapter{Chapter 2: Sử dụng và chạy mô phỏng trong Isaac Sim}
+\renewcommand{\thesection}{2.\arabic{section}}
+\renewcommand{\theHsection}{2.\arabic{section}}
+\renewcommand{\theHsubsection}{2.\arabic{section}.\arabic{subsection}}
+\renewcommand{\theHsubsubsection}{2.\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+\setcounter{section}{0}
+
+\input{sections/isaacsim-usage-vie}
 \newpage
 
 

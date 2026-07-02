@@ -1,0 +1,485 @@
+\section{Tạo cây thư mục giống project}
+
+Project F450 được tổ chức theo kiểu một ROS 2 workspace, bên trong có một
+package mô tả robot tên là \texttt{f450\_description}. Phần mô hình robot,
+controller, script chạy trong Isaac Sim và script vẽ đồ thị được đặt chung
+trong package này.
+
+\subsection{Cấu trúc thư mục chính}
+
+Cấu trúc rút gọn của project:
+
+\begin{lstlisting}[language=bash]
+f450/
+|-- f450.usd
+|-- f450_ver2.usd
+|-- f450_ver3.usd
+|-- f450_ver3_1.usd
+|-- configuration/
+|   |-- f450_ver3_base.usd
+|   |-- f450_ver3_physics.usd
+|   |-- f450_ver3_robot.usd
+|   `-- f450_ver3_sensor.usd
+|-- docs/
+|   |-- Baocao.tex
+|   |-- Baocao.pdf
+|   |-- figures/
+|   `-- sections/
+`-- ros2_ws/
+    |-- build/
+    |-- install/
+    |-- log/
+    `-- src/
+        `-- f450_description/
+            |-- CMakeLists.txt
+            |-- package.xml
+            |-- urdf/
+            |   `-- f450.urdf.xacro
+            |-- meshes/
+            |   |-- bottom_plate.stl
+            |   |-- up_plate.stl
+            |   |-- leg.stl
+            |   |-- leg_mount.stl
+            |   `-- protectors.stl
+            `-- src/
+                |-- f450_controller/
+                |-- scripr_editor/
+                |-- data/
+                `-- test/
+\end{lstlisting}
+
+Trong đó:
+
+\begin{itemize}
+    \item \texttt{urdf/}: chứa file mô tả robot.
+    \item \texttt{meshes/}: chứa các file STL được URDF tham chiếu.
+    \item \texttt{src/f450\_controller/}: chứa toàn bộ controller Python.
+    \item \texttt{src/scripr\_editor/}: chứa các đoạn script dùng trong Isaac
+    Sim Script Editor.
+    \item \texttt{src/data/}: chứa CSV log và các script vẽ đồ thị.
+    \item \texttt{configuration/}: chứa các USD cấu hình được tách theo robot,
+    physics và sensor.
+\end{itemize}
+
+\subsection{Tạo workspace và package}
+
+Nếu tạo lại từ đầu, có thể bắt đầu bằng cây thư mục như sau:
+
+\begin{lstlisting}[language=bash]
+mkdir -p f450/ros2_ws/src
+cd f450/ros2_ws/src
+
+ros2 pkg create f450_description --build-type ament_cmake
+
+cd f450_description
+mkdir -p urdf meshes launch
+mkdir -p src/f450_controller
+mkdir -p src/scripr_editor
+mkdir -p src/data
+mkdir -p src/test
+\end{lstlisting}
+
+Sau đó đặt các file vào đúng vị trí:
+
+\begin{lstlisting}[language=bash]
+# Robot description
+cp f450.urdf.xacro urdf/
+
+# Mesh files used by the URDF
+cp *.stl meshes/
+
+# Python controller modules
+cp *.py src/f450_controller/
+
+# Isaac Sim Script Editor snippets
+cp run.py set_pos.py circle_trajectory.py circle_run.py src/scripr_editor/
+
+# Plotting and logging scripts
+cp plot_tracking.py live_plot_tracking.py plot_trajectory_3d.py src/data/
+\end{lstlisting}
+
+Trong \texttt{CMakeLists.txt}, project cần install các thư mục mô tả robot:
+
+\begin{lstlisting}[language=bash]
+install(
+  DIRECTORY urdf meshes launch
+  DESTINATION share/${PROJECT_NAME}
+)
+\end{lstlisting}
+
+Sau khi chuẩn bị xong, build workspace:
+
+\begin{lstlisting}[language=bash]
+cd f450/ros2_ws
+colcon build
+source install/setup.bash
+\end{lstlisting}
+
+\section{Import file URDF vào Isaac Sim}
+
+File mô tả robot nằm trong thư mục:
+
+\begin{lstlisting}[language=bash]
+f450/ros2_ws/src/f450_description/urdf/f450.urdf.xacro
+\end{lstlisting}
+
+Isaac Sim URDF Importer thường làm việc trực tiếp với file \texttt{.urdf}. Nếu
+file hiện tại là \texttt{.urdf.xacro}, cần generate ra \texttt{.urdf} trước:
+
+\begin{lstlisting}[language=bash]
+cd f450/ros2_ws
+source install/setup.bash
+
+ros2 run xacro xacro \
+  src/f450_description/urdf/f450.urdf.xacro \
+  -o src/f450_description/urdf/f450.urdf
+\end{lstlisting}
+
+Sau đó trong Isaac Sim:
+
+\begin{enumerate}
+    \item Mở Isaac Sim.
+    \item Bật extension URDF Importer nếu chưa bật. Có thể tìm
+    \texttt{omni.importer.urdf} trong cửa sổ Extensions.
+    \item Mở công cụ URDF Importer.
+    \item Chọn file \texttt{f450.urdf}.
+    \item Kiểm tra đường dẫn mesh để các file STL trong thư mục
+    \texttt{meshes/} được load đúng.
+    \item Import robot vào stage.
+    \item Lưu stage thành file USD, ví dụ \texttt{f450.usd} hoặc
+    \texttt{f450\_ver3.usd}.
+\end{enumerate}
+
+Sau khi import, cần kiểm tra path của rigid body chính. Trong controller hiện
+tại, path mặc định là:
+
+\begin{lstlisting}[language=Python]
+base_link_path = "/f450_simple/base_link"
+\end{lstlisting}
+
+Nếu trong stage Isaac Sim tên prim khác, cần sửa \texttt{base\_link\_path} khi
+tạo controller.
+
+\section{Viết controller ngoài và gọi từ Script Editor}
+
+Controller được viết bên ngoài Isaac Sim trong thư mục:
+
+\begin{lstlisting}[language=bash]
+f450/ros2_ws/src/f450_description/src/f450_controller
+\end{lstlisting}
+
+Thư mục này là một Python package vì có file:
+
+\begin{lstlisting}[language=bash]
+f450_controller/__init__.py
+\end{lstlisting}
+
+Isaac Sim Script Editor không tự biết đường dẫn project, nên khi chạy cần thêm
+đường dẫn controller vào \texttt{sys.path}. File \texttt{run.py} trong project
+đang làm đúng việc này.
+
+\subsection{Setup path và import controller}
+
+Đoạn đầu tiên cần chạy trong Script Editor:
+
+\begin{lstlisting}[language=Python]
+import sys
+import importlib
+import os
+
+CONTROLLER_PATH = "/config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src"
+SCRIPT_PATH = CONTROLLER_PATH + "/scripr_editor"
+DATA_DIR = CONTROLLER_PATH + "/data"
+TRACKING_CSV = DATA_DIR + "/f450_tracking.csv"
+
+for path in (CONTROLLER_PATH, SCRIPT_PATH):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+os.makedirs(DATA_DIR, exist_ok=True)
+importlib.invalidate_caches()
+\end{lstlisting}
+
+Nếu project nằm ở đường dẫn khác, chỉ cần sửa biến \texttt{CONTROLLER\_PATH}.
+
+\subsection{Reload module khi sửa code}
+
+Khi đang mở Isaac Sim, nếu sửa file controller bên ngoài, nên reload lại module
+trước khi tạo controller mới:
+
+\begin{lstlisting}[language=Python]
+try:
+    f450_app.stop()
+except Exception:
+    pass
+
+MODULE_NAMES = [
+    "f450_controller.control_utils",
+    "f450_controller.motor_model",
+    "f450_controller.altitude_hold",
+    "f450_controller.attitude_pid",
+    "f450_controller.position_hold",
+    "f450_controller.yaw_hold",
+    "f450_controller.motor_mixer",
+    "f450_controller.propeller_spinner",
+    "f450_controller.tracking_logger",
+    "f450_controller.attitude_hold_compat",
+    "f450_controller.issac_attitude_hold",
+]
+
+modules = {}
+for module_name in MODULE_NAMES:
+    modules[module_name] = importlib.import_module(module_name)
+
+for module_name in MODULE_NAMES:
+    modules[module_name] = importlib.reload(modules[module_name])
+
+issac_attitude_hold = modules["f450_controller.issac_attitude_hold"]
+\end{lstlisting}
+
+Việc reload giúp Script Editor dùng phiên bản code mới nhất mà không cần tắt
+mở lại Isaac Sim.
+
+\subsection{Tạo controller và bắt đầu chạy}
+
+Sau khi import, tạo đối tượng controller:
+
+\begin{lstlisting}[language=Python]
+f450_app = issac_attitude_hold.F450AttitudeHold(
+    base_link_path="/f450_simple/base_link",
+    z_target=1.0,
+    pwm_hover=1650.0,
+)
+
+f450_app.position_angle_limit_deg = 6.5
+f450_app.position_accel_limit = 1.2
+
+f450_app.set_yaw_target(0.0)
+f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
+f450_app.start()
+
+print("F450 controller STARTED")
+print("Tracking CSV:", TRACKING_CSV)
+\end{lstlisting}
+
+Khi gọi \texttt{f450\_app.start()}, controller đăng ký callback
+\texttt{on\_physics\_step(dt)} với physics engine của Isaac Sim. Từ thời điểm
+đó, mỗi physics step sẽ đọc trạng thái drone, tính PID, mix PWM, cập nhật motor
+model và apply lực vào body.
+
+\section{Mở, chạy mô phỏng, log data và vẽ đồ thị}
+
+\subsection{Mở mô phỏng}
+
+Quy trình chạy mô phỏng:
+
+\begin{enumerate}
+    \item Mở Isaac Sim.
+    \item Mở stage USD đã import robot, ví dụ \texttt{f450.usd} hoặc
+    \texttt{f450\_ver3.usd}.
+    \item Mở Script Editor.
+    \item Paste hoặc mở nội dung file \texttt{src/scripr\_editor/run.py}.
+    \item Kiểm tra lại \texttt{CONTROLLER\_PATH} và
+    \texttt{base\_link\_path}.
+    \item Nhấn Run trong Script Editor.
+\end{enumerate}
+
+Nếu mọi thứ đúng, terminal/console sẽ in:
+
+\begin{lstlisting}[language=bash]
+F450 controller STARTED
+Tracking CSV: /config/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
+\end{lstlisting}
+
+\subsection{Đặt setpoint tĩnh}
+
+Để đổi target vị trí ngang, chạy trong Script Editor:
+
+\begin{lstlisting}[language=Python]
+f450_app.set_position_target(5.0, -1.0)
+\end{lstlisting}
+
+Lệnh này đặt:
+
+\begin{equation}
+    x_d=5.0,\quad y_d=-1.0
+\end{equation}
+
+Để đổi đồng thời $x,y,z$:
+
+\begin{lstlisting}[language=Python]
+f450_app.set_xyz_target(
+    x_target=2.0,
+    y_target=1.0,
+    z_target=1.5,
+)
+\end{lstlisting}
+
+Để chỉ đổi độ cao:
+
+\begin{lstlisting}[language=Python]
+f450_app.set_target(1.5)
+\end{lstlisting}
+
+Để đổi yaw target:
+
+\begin{lstlisting}[language=Python]
+f450_app.set_yaw_target(0.0)
+\end{lstlisting}
+
+\subsection{Bay theo quỹ đạo tròn}
+
+Project có file:
+
+\begin{lstlisting}[language=bash]
+src/scripr_editor/circle_trajectory.py
+src/scripr_editor/circle_run.py
+\end{lstlisting}
+
+Sau khi đã chạy \texttt{run.py} để tạo \texttt{f450\_app}, có thể chạy:
+
+\begin{lstlisting}[language=Python]
+import circle_trajectory as ct
+import importlib
+importlib.reload(ct)
+
+ct.CIRCLE_RADIUS = 2.0
+ct.CIRCLE_Z = 1.5
+ct.CIRCLE_PERIOD = 20.0
+ct.CIRCLE_CENTER_X = 0.0
+ct.CIRCLE_CENTER_Y = 0.0
+ct.TAKEOFF_TIME = 5.0
+ct.LOOKAHEAD_DT = 0.18
+
+ct.TRACKING_CSV = TRACKING_CSV
+ct.start(f450_app)
+\end{lstlisting}
+
+Khi muốn dừng quỹ đạo tròn và lưu log:
+
+\begin{lstlisting}[language=Python]
+import circle_trajectory as ct
+ct.stop(f450_app)
+\end{lstlisting}
+
+\subsection{Bật và dừng log}
+
+Để bật log tracking:
+
+\begin{lstlisting}[language=Python]
+DATA_DIR = CONTROLLER_PATH + "/data"
+TRACKING_CSV = DATA_DIR + "/f450_tracking.csv"
+f450_app.start_tracking_log(TRACKING_CSV, sample_period=0.02)
+\end{lstlisting}
+
+Với \texttt{sample\_period=0.02}, logger ghi dữ liệu tối đa khoảng:
+
+\begin{equation}
+    f_s = \frac{1}{0.02} = 50\ \mathrm{Hz}
+\end{equation}
+
+Để dừng log:
+
+\begin{lstlisting}[language=Python]
+f450_app.stop_tracking_log()
+\end{lstlisting}
+
+File CSV sẽ chứa các nhóm cột chính:
+
+\begin{itemize}
+    \item Position: \texttt{x}, \texttt{x\_target}, \texttt{y},
+    \texttt{y\_target}, \texttt{z}, \texttt{z\_target}.
+    \item Attitude degree: \texttt{roll\_deg},
+    \texttt{roll\_target\_deg}, \texttt{pitch\_deg},
+    \texttt{pitch\_target\_deg}, \texttt{yaw\_deg},
+    \texttt{yaw\_target\_deg}.
+    \item Attitude radian: \texttt{roll\_rad},
+    \texttt{roll\_target\_rad}, \texttt{pitch\_rad},
+    \texttt{pitch\_target\_rad}, \texttt{yaw\_rad},
+    \texttt{yaw\_target\_rad}.
+\end{itemize}
+
+\subsection{Vẽ đồ thị realtime}
+
+Trong lúc Isaac Sim đang chạy, mở terminal khác và chạy:
+
+\begin{lstlisting}[language=bash]
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/live_plot_tracking.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --wait \
+  --max-points 2000
+\end{lstlisting}
+
+Option \texttt{--wait} cho phép script đợi tới khi file CSV xuất hiện. Option
+\texttt{--max-points} giới hạn số điểm hiển thị để đồ thị realtime không quá
+nặng.
+
+\subsection{Vẽ đồ thị 2D sau mô phỏng}
+
+Sau khi dừng mô phỏng và gọi \texttt{stop\_tracking\_log()}, tạo đồ thị 2D:
+
+\begin{lstlisting}[language=bash]
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_tracking.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv
+\end{lstlisting}
+
+Đồ thị 2D dùng để so sánh target và giá trị thực của:
+
+\begin{equation}
+    x,\ y,\ z,\ roll,\ pitch,\ yaw
+\end{equation}
+
+Vị trí dùng đơn vị mét, còn góc được vẽ theo độ.
+
+\subsection{Vẽ quỹ đạo 3D}
+
+Để xem quỹ đạo bay trong không gian 3D sau mô phỏng:
+
+\begin{lstlisting}[language=bash]
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_trajectory_3d.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --show
+\end{lstlisting}
+
+Để xem live 3D trong khi Isaac Sim đang chạy:
+
+\begin{lstlisting}[language=bash]
+python3 ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/plot_trajectory_3d.py \
+  ~/Desktop/IssacSim_TA/f450/ros2_ws/src/f450_description/src/data/f450_tracking.csv \
+  --live --wait --interval 500
+\end{lstlisting}
+
+Để vẽ thêm vector attitude dọc theo đường bay:
+
+\begin{lstlisting}[language=bash]
+python3 plot_trajectory_3d.py f450_tracking.csv --show --attitude --attitude-step 15
+\end{lstlisting}
+
+Mặc định output ảnh sẽ có dạng:
+
+\begin{lstlisting}[language=bash]
+f450_tracking_tracking.png
+f450_tracking_traj3d.png
+\end{lstlisting}
+
+\subsection{Dừng controller}
+
+Khi kết thúc thử nghiệm, nên dừng log và controller:
+
+\begin{lstlisting}[language=Python]
+f450_app.stop_tracking_log()
+f450_app.stop()
+\end{lstlisting}
+
+Nếu muốn chạy lại từ đầu, chạy lại file \texttt{run.py}. Trong file này đã có
+đoạn:
+
+\begin{lstlisting}[language=Python]
+try:
+    f450_app.stop()
+except Exception:
+    pass
+\end{lstlisting}
+
+Nhờ đó controller cũ được dừng trước khi tạo controller mới, tránh trường hợp
+nhiều callback physics chạy chồng lên nhau.
